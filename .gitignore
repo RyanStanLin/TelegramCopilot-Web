@@ -12,3 +12,5 @@ playwright-report/
 .paas/
 paas.secrets.json
 .DS_Store
+/.paas/
+/paas.secrets.json

@@ -11,7 +11,7 @@ export function ResourceTable({
 }: {
   kind: Kind;
   rows: Resource[];
-  onDelete: (resource: Resource) => void;
+  onDelete: (resource: Resource, trigger: HTMLButtonElement) => void;
 }) {
   const { t, locale } = useI18n();
   const date = (value: string) =>
@@ -66,7 +66,7 @@ export function ResourceTable({
                 size="medium"
                 variant="danger"
                 aria-label={`${t("delete")} ${r.name}`}
-                onClick={() => onDelete(r)}
+                onClick={(event) => onDelete(r, event.currentTarget)}
               >
                 {t("delete")}
               </Button>

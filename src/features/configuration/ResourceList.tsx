@@ -30,6 +30,7 @@ export function ResourceList({ kind }: { kind: Kind }) {
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
   const searchInput = useRef<HTMLInputElement>(null);
+  const returnFocus = useRef<HTMLElement>(null);
   const data = useLoad<Page<Resource>>(
     `/${kind}?${query({ page, pageSize: 25, search })}`,
     revision,
@@ -87,7 +88,8 @@ export function ResourceList({ kind }: { kind: Kind }) {
             <ResourceTable
               kind={kind}
               rows={data.data.items}
-              onDelete={(resource) => {
+              onDelete={(resource, trigger) => {
+                returnFocus.current = trigger;
                 setRemove(resource);
                 setError(false);
               }}
@@ -111,6 +113,7 @@ export function ResourceList({ kind }: { kind: Kind }) {
           cancelButtonContent={t("cancel")}
           confirmButtonType="danger"
           confirmButtonLoading={busy}
+          returnFocusRef={returnFocus}
           onClose={async (gesture) => {
             if (busy) return;
             if (gesture !== "confirm") {
@@ -122,9 +125,9 @@ export function ResourceList({ kind }: { kind: Kind }) {
               await api(`/${kind}/${remove.id}?revision=${remove.revision}`, {
                 method: "DELETE",
               });
+              returnFocus.current = searchInput.current;
               setRemove(undefined);
               refresh((x) => x + 1);
-              requestAnimationFrame(() => searchInput.current?.focus());
             } catch {
               setError(true);
             } finally {

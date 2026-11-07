@@ -19,7 +19,7 @@ git commit -m 'Describe the change'
 git push origin main
 ```
 
-When checked out as the backend's `web` submodule, run these commands inside `web`. Commit its new pointer in the backend separately when desired. Each repository's push updates its own service.
+When checked out as the backend's `web` submodule, run `git switch main` before editing, then run these commands inside `web`. Commit its new pointer in the backend separately when desired. Each repository's push updates its own service.
 
 ## Configuration and data
 

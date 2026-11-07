@@ -72,12 +72,17 @@ export async function verifyConfigurationPages(page: Page) {
   }
   for (const fixture of [...configurationFixtures].reverse()) {
     await page.goto(`/${fixture.kind}`);
-    await page
-      .getByRole("button", {
+    const deleteButton = page.getByRole("button", {
         name: `删除 ${fixture.name} updated`,
         exact: true,
-      })
-      .click();
+      });
+    await deleteButton.click();
+    if (fixture.kind === "settings") {
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("alertdialog")).toHaveCount(0);
+      await expect(deleteButton).toBeFocused();
+      await deleteButton.click();
+    }
     await page
       .getByRole("alertdialog")
       .getByRole("button", { name: "删除配置", exact: true })

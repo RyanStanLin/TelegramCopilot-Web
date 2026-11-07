@@ -1,6 +1,6 @@
 "use client";
 import { Button, Dialog, Stack, type DialogHeaderProps } from "@primer/react";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { useI18n } from "@/i18n/provider";
 
 function ConfirmHeader({ dialogLabelId, title, onClose }: DialogHeaderProps) {
@@ -28,6 +28,7 @@ export function Confirm({
   cancelButtonContent,
   confirmButtonType = "normal",
   confirmButtonLoading = false,
+  returnFocusRef,
   onClose,
   children,
 }: {
@@ -36,6 +37,7 @@ export function Confirm({
   cancelButtonContent: ReactNode;
   confirmButtonType?: "normal" | "primary" | "danger";
   confirmButtonLoading?: boolean;
+  returnFocusRef?: RefObject<HTMLElement | null>;
   onClose: (gesture: "confirm" | "cancel" | "close-button" | "escape") => void;
   children?: ReactNode;
 }) {
@@ -46,6 +48,7 @@ export function Confirm({
       role="alertdialog"
       width="medium"
       renderHeader={ConfirmHeader}
+      returnFocusRef={returnFocusRef}
       onClose={onClose}
       footerButtons={[
         {

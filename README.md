@@ -83,6 +83,6 @@ WEB_DATA_PATH 必须持久化。不要提交 `.env.local`、web.db 或生产日�
 
 ## 设计与验证
 
-设计依据是 Primer Product UI，非 Primer Brand。依赖固定于 package-lock，CSS Modules 与官方语义 tokens，使用 Stack、PageLayout、PageHeader、NavList、表单控件和 Table，禁用自造原生控件。研究和官方文档回退见根目录 `work/primer-docs-ledger.md`。
+设计依据是 Primer Product UI，非 Primer Brand。依赖固定于 package-lock，CSS Modules 与官方语义 tokens，使用 Stack、PageLayout、PageHeader、NavList、表单控件和 Table，禁用自造原生控件。研究和官方文档回退见 [设计记录](work/primer-docs-ledger.md)。
 
-CSS 校验在前端仓库根目录执行 `npm ci && npm run lint:css`。浏览器集成验证使用临时数据目录和虚拟 WebAuthn 认证器；请参考根目录 `docs/verification.md`。真实设备 Passkey 同步、Telegram 账号可见性和 Bark 手机端效果需在你的部署中确认。
+CSS 校验在前端仓库根目录执行 `npm ci && npm run lint:css`。浏览器集成验证使用临时数据目录和虚拟 WebAuthn 认证器；请参考 [后端验证记录](https://github.com/RyanStanLin/TelegramCopilot/blob/main/docs/verification.md)。真实设备 Passkey 同步、Telegram 账号可见性和 Bark 手机端效果需在你的部署中确认。
