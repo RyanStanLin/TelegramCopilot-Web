@@ -55,3 +55,27 @@ jobs:
           name: frontend-failure-report
           path: application/playwright-report
           retention-days: 3
+  invalidate_cache:
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    uses: Deploy-ryanl-in/personal-paas/.github/workflows/operate.yml@472a450fa4a7f8caca1b8b7c2b451eb7758dc442
+    with:
+      deployment-url: https://deploy.ryanl.in
+      action: clear-route-cache
+  release:
+    needs: [test, invalidate_cache]
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+      actions: read
+      id-token: write
+    uses: Deploy-ryanl-in/personal-paas/.github/workflows/release.yml@472a450fa4a7f8caca1b8b7c2b451eb7758dc442
+    with:
+      deployment-url: https://deploy.ryanl.in
+      domain: ryanl.in
+      platform-repository: Deploy-ryanl-in/personal-paas
+      platform-sha: 472a450fa4a7f8caca1b8b7c2b451eb7758dc442
