@@ -9,6 +9,7 @@ import {
   verifyResponsivePresence,
 } from "./visual-checks";
 import { verifyConfigurationPages } from "./configuration-checks";
+import { verifyAccountLogin } from "./account-login-checks";
 
 test("single_passkey_guards_console_and_configuration_workflows", async ({
   page,
@@ -95,6 +96,7 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   ]);
   expect(download.suggestedFilename()).toContain("presence-");
   await verifyConfigurationPages(page);
+  await verifyAccountLogin(page, account.id, test.info());
   await page.setViewportSize({ width: 375, height: 812 });
   await expect(
     page.getByRole("link", { name: "系统设置", exact: true }),

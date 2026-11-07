@@ -2,6 +2,7 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     public code?: string,
+    public retryAfterSeconds?: number,
   ) {
     super(`HTTP ${status}`);
   }
@@ -15,7 +16,11 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   if (!response.ok) {
     if (response.status === 401) window.location.assign("/login");
     const problem = await response.json().catch(() => ({}));
-    throw new ApiError(response.status, problem.code);
+    throw new ApiError(
+      response.status,
+      problem.code,
+      problem.retryAfterSeconds,
+    );
   }
   if (response.status === 204) return undefined as T;
   return response.json();

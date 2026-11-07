@@ -108,7 +108,13 @@ export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
           </Stack>
         </Stack>
       </form>
-      {kind === "accounts" && id !== "new" && <AccountLogin id={id} />}
+      {kind === "accounts" && id !== "new" && (
+        <AccountLogin
+          key={id}
+          id={id}
+          phone={String(existing.data?.settings.phone ?? "")}
+        />
+      )}
       {cancel && (
         <Confirm
           title={t("unsaved")}

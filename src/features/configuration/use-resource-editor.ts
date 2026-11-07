@@ -81,17 +81,24 @@ export function useResourceEditor(kind: Kind, id: string) {
     }
     setBusy(true);
     try {
-      await api(`/${kind}${id === "new" ? "" : `/${id}`}`, {
-        method: id === "new" ? "POST" : "PUT",
-        body: JSON.stringify({
-          name,
-          enabled,
-          settings: settingsValues(kind, values),
-          revision: existing.data?.revision,
-        }),
-      });
+      const saved = await api<Resource>(
+        `/${kind}${id === "new" ? "" : `/${id}`}`,
+        {
+          method: id === "new" ? "POST" : "PUT",
+          body: JSON.stringify({
+            name,
+            enabled,
+            settings: settingsValues(kind, values),
+            revision: existing.data?.revision,
+          }),
+        },
+      );
       setDirty(false);
-      router.push(`/${kind}`);
+      router.push(
+        kind === "accounts" && saved.enabled
+          ? `/accounts/${saved.id}`
+          : `/${kind}`,
+      );
       router.refresh();
     } catch {
       setError(true);
