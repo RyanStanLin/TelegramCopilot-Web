@@ -2,6 +2,7 @@
 import { useI18n } from "@/i18n/provider";
 import { RecordsTable } from "@/components/RecordsTable";
 import type { Interval } from "@/lib/types";
+import { formatDuration } from "@/lib/duration";
 export function Timeline({
   rows,
   timeZone,
@@ -17,9 +18,7 @@ export function Timeline({
       timeZone,
     }).format(new Date(value));
   const number = (v?: number) =>
-    v === undefined || v === null
-      ? t("none")
-      : new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(v);
+    v === undefined || v === null ? t("none") : formatDuration(v, locale);
   return (
     <RecordsTable<Interval>
       title={t("timeline")}

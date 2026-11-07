@@ -2,7 +2,16 @@ import type { Kind } from "@/lib/types";
 export type Field = {
   key: string;
   label?: string;
-  type?: "number" | "password" | "textarea" | "json" | "list" | "boolean";
+  type?:
+    | "number"
+    | "password"
+    | "textarea"
+    | "json"
+    | "list"
+    | "boolean"
+    | "duration";
+  min?: number;
+  max?: number;
   required?: boolean;
   initial?: unknown;
   options?: string[];
@@ -27,7 +36,15 @@ export const schema: Record<Kind, Field[]> = {
   targets: [
     account,
     { key: "identifier", required: true },
-    { key: "refreshSeconds", type: "number", initial: 30, required: true },
+    {
+      key: "refreshSeconds",
+      type: "duration",
+      initial: 30,
+      required: true,
+      min: 1,
+      max: 3600,
+      hint: "durationHint",
+    },
   ],
   schedules: [
     account,
@@ -117,13 +134,32 @@ export const schema: Record<Kind, Field[]> = {
   ],
   settings: [
     zone,
-    { key: "heartbeatSeconds", type: "number", initial: 1, required: true },
-    { key: "staleAfterSeconds", type: "number", initial: 5, required: true },
+    {
+      key: "heartbeatSeconds",
+      type: "duration",
+      initial: 1,
+      required: true,
+      min: 1,
+      max: 10,
+      hint: "durationHint",
+    },
+    {
+      key: "staleAfterSeconds",
+      type: "duration",
+      initial: 5,
+      required: true,
+      min: 2,
+      max: 120,
+      hint: "durationHint",
+    },
     {
       key: "schedulerGraceSeconds",
-      type: "number",
+      type: "duration",
       initial: 60,
       required: true,
+      min: 1,
+      max: 3600,
+      hint: "durationHint",
     },
   ],
 };

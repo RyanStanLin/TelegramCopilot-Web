@@ -14,6 +14,9 @@ import type { Kind } from "@/lib/types";
 import { Failure, Loading } from "@/components/Status";
 import { Fields } from "./Fields";
 import { AccountLogin } from "./AccountLogin";
+import { TargetMonitoring } from "./TargetMonitoring";
+import { ResourceTestActions } from "./ResourceTestActions";
+import { settingsValues } from "./form-values";
 import { useResourceEditor } from "./use-resource-editor";
 export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
   const { t } = useI18n();
@@ -47,6 +50,9 @@ export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
           </PageHeader.Title>
         </PageHeader.TitleArea>
       </PageHeader>
+      {kind === "targets" && id !== "new" && (
+        <TargetMonitoring key={id} id={id} />
+      )}
       <form
         ref={form}
         noValidate
@@ -108,6 +114,24 @@ export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
           </Stack>
         </Stack>
       </form>
+      {(kind === "schedules" || kind === "rules") && (
+        <ResourceTestActions
+          kind={kind}
+          id={id}
+          dirty={dirty}
+          changeToken={JSON.stringify({ name, enabled, values })}
+          getDraft={() => ({
+            name,
+            enabled,
+            settings: settingsValues(kind, values),
+          })}
+          recipient={
+            kind === "schedules"
+              ? String(existing.data?.settings.recipient ?? "")
+              : undefined
+          }
+        />
+      )}
       {kind === "accounts" && id !== "new" && (
         <AccountLogin
           key={id}

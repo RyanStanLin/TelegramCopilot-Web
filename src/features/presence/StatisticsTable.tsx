@@ -2,6 +2,7 @@
 import { useI18n } from "@/i18n/provider";
 import { RecordsTable } from "@/components/RecordsTable";
 import type { Bucket } from "@/lib/types";
+import { formatDuration } from "@/lib/duration";
 export function StatisticsTable({
   rows,
   title,
@@ -42,7 +43,13 @@ export function StatisticsTable({
         ].map((key) => ({
           key,
           label: key,
-          render: (r: Bucket) => number(r[key as keyof Bucket] as number),
+          render: (r: Bucket) =>
+            key === "count"
+              ? number(r.count)
+              : formatDuration(
+                  r[key as keyof Bucket] as number | undefined,
+                  locale,
+                ),
         })),
         {
           key: "coverage",

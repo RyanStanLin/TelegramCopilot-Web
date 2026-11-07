@@ -4,6 +4,7 @@ import { useI18n } from "@/i18n/provider";
 import { Loading } from "@/components/Status";
 import { LoginChallenge } from "./LoginChallenge";
 import { useAccountLogin } from "./use-account-login";
+import { formatDuration } from "@/lib/duration";
 
 const steps: Record<string, [string, string, string?]> = {
   authorizationStateWaitPhoneNumber: [
@@ -47,7 +48,7 @@ const steps: Record<string, [string, string, string?]> = {
 };
 
 export function AccountLogin({ id, phone }: { id: string; phone: string }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { status, error, retryAfter, busy, refresh, submit } =
     useAccountLogin(id);
   const [title, help, type] = steps[status?.authorizationState ?? ""] ?? [
@@ -79,7 +80,7 @@ export function AccountLogin({ id, phone }: { id: string; phone: string }) {
             title={t(problem) === problem ? t("loginRejected") : t(problem)}
             description={
               wait
-                ? `${t("loginRetryAfter")} ${wait} ${t("seconds")}`
+                ? `${t("loginRetryAfter")} ${formatDuration(wait, locale)}`
                 : undefined
             }
           />

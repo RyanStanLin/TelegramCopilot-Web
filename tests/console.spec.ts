@@ -10,6 +10,8 @@ import {
 } from "./visual-checks";
 import { verifyConfigurationPages } from "./configuration-checks";
 import { verifyAccountLogin } from "./account-login-checks";
+import { verifyMonitoringDetails } from "./monitoring-checks";
+import { verifyManualTests } from "./manual-test-checks";
 
 test("single_passkey_guards_console_and_configuration_workflows", async ({
   page,
@@ -96,6 +98,8 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   ]);
   expect(download.suggestedFilename()).toContain("presence-");
   await verifyConfigurationPages(page);
+  const monitoringTarget = await verifyMonitoringDetails(page, test.info());
+  await verifyManualTests(page, account.id, monitoringTarget, test.info());
   await verifyAccountLogin(page, account.id, test.info());
   await page.setViewportSize({ width: 375, height: 812 });
   await expect(

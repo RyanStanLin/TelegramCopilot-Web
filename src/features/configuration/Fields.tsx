@@ -11,6 +11,7 @@ import { useI18n } from "@/i18n/provider";
 import type { Resource } from "@/lib/types";
 import { schema, type Field } from "./schema";
 import type { Kind } from "@/lib/types";
+import { formatDuration, parseDuration } from "@/lib/duration";
 export function Fields({
   kind,
   values,
@@ -54,9 +55,19 @@ function FieldControl({
   rows: Resource[];
   invalid: boolean;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const label = t(f.label ?? f.key);
-  const validation = invalid ? ("error" as const) : undefined;
+  let duration: number | undefined;
+  let badDuration = false;
+  if (f.type === "duration" && value !== "") {
+    try {
+      duration = parseDuration(value);
+      badDuration = duration < (f.min ?? 0) || duration > (f.max ?? Infinity);
+    } catch {
+      badDuration = true;
+    }
+  }
+  const validation = invalid || badDuration ? ("error" as const) : undefined;
   return (
     <FormControl required={f.required}>
       {f.type === "boolean" && (
@@ -118,12 +129,27 @@ function FieldControl({
           />
         )
       )}
-      {invalid ? (
+      {invalid || badDuration ? (
         <FormControl.Validation variant="error">
-          {t(f.type === "json" ? "invalidJson" : "required")}
+          {t(
+            f.type === "duration"
+              ? "invalidDuration"
+              : f.type === "json"
+                ? "invalidJson"
+                : "required",
+          )}
+          {f.type === "duration" &&
+            ` (${formatDuration(f.min, locale)} – ${formatDuration(f.max, locale)})`}
         </FormControl.Validation>
       ) : (
-        f.hint && <FormControl.Caption>{t(f.hint)}</FormControl.Caption>
+        f.hint && (
+          <FormControl.Caption>
+            {t(f.hint)}
+            {f.type === "duration" && duration !== undefined
+              ? ` · ${formatDuration(duration, locale)}`
+              : ""}
+          </FormControl.Caption>
+        )
       )}
     </FormControl>
   );

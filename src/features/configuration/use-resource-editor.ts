@@ -6,6 +6,7 @@ import { useLoad } from "@/lib/use-load";
 import type { Kind, Resource } from "@/lib/types";
 import { schema } from "./schema";
 import { formValues, settingsValues } from "./form-values";
+import { parseDuration } from "@/lib/duration";
 export function useResourceEditor(kind: Kind, id: string) {
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
@@ -62,8 +63,19 @@ export function useResourceEditor(kind: Kind, id: string) {
       )
       .map((f) => f.key);
     if (!name.trim()) errors.unshift("name");
+    for (const field of schema[kind].filter(
+      (field) => field.type === "duration",
+    )) {
+      try {
+        const seconds = parseDuration(values[field.key]);
+        if (seconds < (field.min ?? 0) || seconds > (field.max ?? Infinity))
+          errors.push(field.key);
+      } catch {
+        errors.push(field.key);
+      }
+    }
     try {
-      settingsValues(kind, values);
+      if (!errors.length) settingsValues(kind, values);
     } catch {
       errors.push("parameters");
     }

@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/i18n/provider";
 import { Language } from "./Language";
+import { MonitoringPulse } from "./MonitoringPulse";
 import css from "./Shell.module.css";
 const sections = [
   "targets",
@@ -31,6 +32,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         >
           <Stack gap="condensed">
             <strong>TelegramCopilot</strong>
+            <MonitoringPulse />
             <Link href="#content">{t("skip")}</Link>
           </Stack>
           <Stack direction="horizontal" align="end" gap="normal" wrap="wrap">

@@ -1,9 +1,12 @@
 import type { Kind } from "@/lib/types";
 import { schema } from "./schema";
+import { formatDuration, parseDuration } from "@/lib/duration";
 export function formValues(kind: Kind, input: Record<string, unknown> = {}) {
   const values: Record<string, unknown> = {};
   schema[kind].forEach((f) => {
     values[f.key] = input[f.key] ?? f.initial ?? "";
+    if (f.type === "duration" && typeof values[f.key] === "number")
+      values[f.key] = formatDuration(Number(values[f.key]), "en");
   });
   if (kind === "destinations") {
     const e = input.encryption as {
@@ -29,6 +32,7 @@ export function formValues(kind: Kind, input: Record<string, unknown> = {}) {
 export function settingsValues(kind: Kind, input: Record<string, unknown>) {
   const values = { ...input };
   schema[kind].forEach((f) => {
+    if (f.type === "duration") values[f.key] = parseDuration(values[f.key]);
     if (f.type === "number") values[f.key] = Number(values[f.key]);
     if (f.type === "json")
       values[f.key] = JSON.parse(String(values[f.key] || "{}"));

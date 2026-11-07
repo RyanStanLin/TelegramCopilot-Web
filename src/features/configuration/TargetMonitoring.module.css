@@ -1,0 +1,26 @@
+.details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--base-size-12) var(--base-size-24);
+  margin: 0;
+}
+
+.label {
+  color: var(--fgColor-muted);
+}
+
+.value {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 544px) {
+  .details {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--base-size-8);
+  }
+
+  .value {
+    margin-bottom: var(--base-size-8);
+  }
+}

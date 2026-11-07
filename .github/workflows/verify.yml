@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: RyanStanLin/TelegramCopilot
-          ref: 34cb9670d6387f05d1a98f9f438a76afb3f82695
+          ref: 446785c183e7f123419e804acd6820f032cddd85
           path: api-fixture
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020

@@ -9,6 +9,7 @@ import type { Row, Page } from "@/lib/types";
 import { Failure, Loading, Pager } from "@/components/Status";
 import { RecordsTable } from "@/components/RecordsTable";
 import { HistoryFilters } from "./history/HistoryFilters";
+import { formatDuration } from "@/lib/duration";
 export function History({ section }: { section: "events" | "deliveries" }) {
   const { t, locale } = useI18n();
   const params = useSearchParams();
@@ -49,6 +50,7 @@ export function History({ section }: { section: "events" | "deliveries" }) {
         ];
   const render = (v: unknown, key: string) => {
     if (v === null || v === undefined) return t("none");
+    if (key === "onlineSeconds") return formatDuration(Number(v), locale);
     if (["at", "dueAt", "updatedAt"].includes(key))
       return new Intl.DateTimeFormat(locale, {
         dateStyle: "medium",

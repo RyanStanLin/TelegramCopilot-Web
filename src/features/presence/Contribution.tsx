@@ -1,4 +1,5 @@
 "use client";
+import { formatDuration } from "@/lib/duration";
 import { Heading, Link, Stack } from "@primer/react";
 import NextLink from "next/link";
 import { useI18n } from "@/i18n/provider";
@@ -68,7 +69,7 @@ export function Contribution({
                       : d.count < 10
                         ? 3
                         : 4;
-              const label = `${day.format(new Date(d.from))}: ${t("count")} ${number.format(d.count)}, ${t("onlineSeconds")} ${number.format(d.onlineSeconds)}, ${t("unknownSeconds")} ${number.format(d.unknownSeconds)}`;
+              const label = `${day.format(new Date(d.from))}: ${t("count")} ${number.format(d.count)}, ${t("onlineSeconds")} ${formatDuration(d.onlineSeconds, locale)}, ${t("unknownSeconds")} ${formatDuration(d.unknownSeconds, locale)}`;
               return (
                 <Link
                   as={NextLink}

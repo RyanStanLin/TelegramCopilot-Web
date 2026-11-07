@@ -55,3 +55,7 @@
 ## Production constraint follow-up
 
 - Under 192 MiB / 0.5 CPU and a read-only root, the browser check exposed a deletion-focus race with requestAnimationFrame. Dialog returnFocusRef was verified with the live official Primer MCP and installed public types. Confirmation now returns to the original trigger on cancellation and to the search input after deletion through that API. The existing browser workflow also checks cancellation return focus. No CSS change was needed.
+
+## Monitoring details and manual tests (2026-11-08)
+
+Primer React 38.45.0 retained. Target detail follows the existing settings page with a detail metadata section; forms and local save actions retain their placement. Avatar, Button, Banner, Stack, FormControl and TextInput public APIs checked through official Primer MCP and installed types. Definition-list grid is the only custom layout; uses base-size and semantic color tokens, with a 544px implementation breakpoint. No GitHub pixel equivalence is claimed. Counter values come from the background repository; browser reads do not increment them. Manual test controls explain saved-configuration sends and show per-delivery outcomes. Visual/interaction acceptance uses desktop and 375px views, without a same-version GitHub screenshot baseline.
