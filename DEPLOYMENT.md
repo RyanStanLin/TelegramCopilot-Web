@@ -9,7 +9,7 @@
 
 ## Updates
 
-After initial release wiring is installed, a normal commit/push to `main` runs CSS validation, production build, TypeScript and both browser integration tests. The tests use a disposable local backend at a reviewed fixed source commit, disabled Telegram fixtures and a virtual WebAuthn authenticator. They never use production data or send messages.
+A normal commit/push to `main` runs CSS validation, production build, TypeScript and both browser integration tests. The tests use a disposable local backend at a reviewed fixed source commit, disabled Telegram fixtures and a virtual WebAuthn authenticator. They never use production data or send messages.
 
 An independent cache-invalidation job and successful checks gate the reusable release. GitHub builds linux/amd64, pushes the repository-ID-specific GHCR image and deploys its digest using GitHub OIDC. PRs only validate. No SSH keys or platform administrator secrets belong in this repository.
 
@@ -41,4 +41,13 @@ For readiness failures inspect the same commit's Actions jobs, then logs and vol
 
 ## Release evidence
 
-Actual release/run identities and the follow-up push persistence check are recorded after online verification.
+Initial production release verified on 2026-11-08:
+
+- Commit: `f37cfd3888467d3100d6f250bbdb1b8c71332479`.
+- Successful complete run: https://github.com/RyanStanLin/TelegramCopilot-Web/actions/runs/42390824079
+- Release ID: `5c5e5b100459b5d2b29f6d77117131af1b9c94078f2cae37b25f347453fb223b`.
+- HTTPS SSR, production CSS, auth status and unauthenticated proxy rejection passed. The owner registered their own Passkey and reached the console.
+
+Further follow-up push and cross-update persistence acceptance were skipped at the owner's request. This documentation commit still triggers the automatic pipeline; the latest successful main run and PaaS history are authoritative for the current online identity.
+
+Initial web image: `ghcr.io/ryanstanlin/paas-1449504921-web@sha256:1295a53dc4514c1094329bbc85e700a89d2d695a214c86f7d76f75c568dea1af`.
