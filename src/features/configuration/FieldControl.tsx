@@ -5,6 +5,7 @@ import type { Resource } from "@/lib/types";
 import { Choice } from "@/components/Choice";
 import { formatDuration, parseDuration } from "@/lib/duration";
 import type { Field } from "./schema";
+import numeric from "@/components/NumericText.module.css";
 export function FieldControl({
   field: f,
   value,
@@ -74,6 +75,11 @@ export function FieldControl({
       ) : (
         f.type !== "boolean" && (
           <TextInput
+            className={
+              ["number", "duration"].includes(f.type ?? "")
+                ? numeric.number
+                : undefined
+            }
             size="medium"
             block
             type={

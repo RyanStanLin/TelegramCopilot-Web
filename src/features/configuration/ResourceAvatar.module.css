@@ -1,0 +1,8 @@
+.fallback {
+  inline-size: var(--control-medium-size);
+  block-size: var(--control-medium-size);
+  flex-shrink: 0;
+  border-radius: var(--borderRadius-full);
+  background: var(--bgColor-muted);
+  color: var(--fgColor-muted);
+}

@@ -1,4 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
+import { realtimeFixture } from "./realtime-fixture";
 
 export async function verifyAccountLogin(
   page: Page,
@@ -11,10 +12,11 @@ export async function verifyAccountLogin(
     error: null as string | null,
     login: {} as Record<string, unknown>,
   };
-  let statusReads = 0;
+  const realtime = await realtimeFixture(page);
+  const path = `/accounts/${id}/status`;
+  realtime.set(path, () => status);
   const submitted: string[] = [];
   await page.route(`**/api/backend/accounts/${id}/status`, async (route) => {
-    statusReads++;
     await route.fulfill({ json: status });
   });
   await page.route(`**/api/backend/accounts/${id}/login`, async (route) => {
@@ -97,8 +99,7 @@ export async function verifyAccountLogin(
     login.getByText(/验证码已发送到你已登录的 Telegram/),
   ).toBeVisible();
   await code.fill("12");
-  const reads = statusReads;
-  await expect.poll(() => statusReads).toBeGreaterThan(reads);
+  realtime.push(path);
   await expect(code).toHaveValue("12");
   await page.setViewportSize({ width: 375, height: 812 });
   await expect(
@@ -136,10 +137,12 @@ export async function verifyAccountLogin(
   expect(submitted).toEqual(["phone", "code", "code", "password"]);
   await login.screenshot({ path: info.outputPath("account-login-ready.png") });
   status = { ...status, authorizationState: "Inactive" };
+  realtime.push(path);
   await expect(login.getByText("账号尚未启动", { exact: true })).toBeVisible();
   await expect(
     login.getByRole("button", { name: "发送验证码", exact: true }),
   ).toHaveCount(0);
   await page.unroute(`**/api/backend/accounts/${id}/status`);
   await page.unroute(`**/api/backend/accounts/${id}/login`);
+  realtime.remove(path);
 }

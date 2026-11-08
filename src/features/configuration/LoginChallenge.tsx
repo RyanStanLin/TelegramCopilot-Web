@@ -3,6 +3,8 @@ import { Button, FormControl, Stack, TextInput } from "@primer/react";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/i18n/provider";
 import type { AccountStatus } from "./use-account-login";
+import { NumericText } from "@/components/NumericText";
+import numeric from "@/components/NumericText.module.css";
 
 const deliveryHelp: Record<string, string> = {
   authenticationCodeTypeTelegramMessage: "loginViaTelegram",
@@ -51,12 +53,13 @@ export function LoginChallenge({
       <Stack gap="normal">
         {isPhone ? (
           <p>
-            {t("loginSavedPhone")} {phone}
+            {t("loginSavedPhone")} <NumericText>{phone}</NumericText>
           </p>
         ) : (
           <FormControl required disabled={busy}>
             <FormControl.Label>{t(type)}</FormControl.Label>
             <TextInput
+              className={isCode ? numeric.number : undefined}
               ref={input}
               size="medium"
               block
@@ -83,9 +86,9 @@ export function LoginChallenge({
             <FormControl.Caption>
               {type === "code" &&
                 t(deliveryHelp[details?.delivery ?? ""] ?? "loginCodeHelp")}
-              {isCode &&
-                !!details?.codeLength &&
-                ` · ${details.codeLength} ${t("loginCodeCharacters")}`}
+              {isCode && !!details?.codeLength && (
+                <NumericText>{` · ${details.codeLength} ${t("loginCodeCharacters")}`}</NumericText>
+              )}
               {type === "password" &&
                 (details?.passwordHint
                   ? `${t("loginPasswordHint")} ${details.passwordHint}`

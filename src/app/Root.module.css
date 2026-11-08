@@ -1,4 +1,5 @@
 .body {
   background-color: var(--bgColor-default);
   font: var(--text-body-shorthand-medium);
+  font-variant-numeric: tabular-nums;
 }

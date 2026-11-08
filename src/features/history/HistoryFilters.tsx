@@ -2,6 +2,7 @@
 import { Button, FormControl, Stack, TextInput } from "@primer/react";
 import { Choice } from "@/components/Choice";
 import { useI18n } from "@/i18n/provider";
+import numeric from "@/components/NumericText.module.css";
 type Props = {
   section: "events" | "deliveries";
   from: string;
@@ -44,6 +45,7 @@ export function HistoryFilters({
               <FormControl key={String(key)}>
                 <FormControl.Label>{t(String(key))}</FormControl.Label>
                 <TextInput
+                  className={numeric.number}
                   size="medium"
                   value={String(value)}
                   onChange={(e) =>
@@ -83,6 +85,7 @@ export function HistoryFilters({
             {t(section === "events" ? "targetId" : "resource")}
           </FormControl.Label>
           <TextInput
+            className={numeric.number}
             size="medium"
             value={entity}
             onChange={(e) => setEntity(e.target.value)}

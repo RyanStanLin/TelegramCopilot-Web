@@ -1,7 +1,8 @@
 "use client";
 import { Details, Stack } from "@primer/react";
 import { useI18n } from "@/i18n/provider";
-import css from "./Shared.module.css";
+import css from "./Reason.module.css";
+import { NumericText } from "./NumericText";
 const known = new Set([
   "TelegramUpdate",
   "CachedReconciliation",
@@ -30,13 +31,19 @@ export function Reason({ value }: { value: string }) {
   const translated = known.has(value);
   const hint = t(`${value}Help`);
   return (
-    <Stack gap="condensed">
+    <Stack gap="tight" className={css.reason}>
       <span>{translated ? t(value) : t("additionalDetails")}</span>
-      {hint !== `${value}Help` && <p className={css.muted}>{hint}</p>}
+      {hint !== `${value}Help` && (
+        <p className={css.hint}>
+          <NumericText>{hint}</NumericText>
+        </p>
+      )}
       {!translated && (
         <Details>
           <summary>{t("technicalDetails")}</summary>
-          <p>{value}</p>
+          <p className={css.detail}>
+            <NumericText>{value}</NumericText>
+          </p>
         </Details>
       )}
     </Stack>

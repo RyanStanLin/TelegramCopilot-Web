@@ -14,6 +14,13 @@ import { verifyConfigurationPages } from "./configuration-checks";
 import { verifyAccountLogin } from "./account-login-checks";
 import { verifyMonitoringDetails } from "./monitoring-checks";
 import { verifyManualTests } from "./manual-test-checks";
+import {
+  observeRealtime,
+  verifyRealtime,
+  verifyUnauthenticatedRealtime,
+} from "./realtime-checks";
+import { verifyTablePolish } from "./table-polish-checks";
+import { verifyIdleRecovery } from "./realtime-idle-checks";
 
 test("single_passkey_guards_console_and_configuration_workflows", async ({
   page,
@@ -21,6 +28,7 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   request,
 }) => {
   const pageErrors: string[] = [];
+  const realtime = await observeRealtime(page);
   page.on("pageerror", (error) => {
     pageErrors.push(error.message);
     console.error("Browser error:", error.message);
@@ -42,8 +50,11 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   expect(account.settings.apiHash).toBe("***");
   const unauthenticated = await request.get("/api/backend/accounts");
   expect(unauthenticated.status()).toBe(401);
+  await verifyUnauthenticatedRealtime(page);
   await beginRegistrationRace(request);
   const cdp = await registerOwner(page, context);
+  await verifyRealtime(page, realtime, account.id);
+  await verifyIdleRecovery(page);
   await verifySingleton(request);
   await changeLanguage(page, "English");
   await expect(
@@ -99,6 +110,7 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   expect(download.suggestedFilename()).toContain("presence-");
   await verifyConfigurationPages(page);
   const monitoringTarget = await verifyMonitoringDetails(page, test.info());
+  await verifyTablePolish(page, monitoringTarget, test.info());
   await verifyExperience(page, monitoringTarget, test.info(), cdp);
   await verifyManualTests(page, account.id, monitoringTarget, test.info());
   await verifyAccountLogin(page, account.id, test.info());
@@ -146,5 +158,6 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   );
   expect(deleteAccount.status()).toBe(204);
   expect(pageErrors).toEqual([]);
+  expect(realtime.httpReads()).toBe(0);
   await cdp.detach();
 });

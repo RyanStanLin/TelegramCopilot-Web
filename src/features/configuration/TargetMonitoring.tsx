@@ -11,6 +11,7 @@ import { TargetActivity } from "./TargetActivity";
 import { TargetIdentity } from "./TargetIdentity";
 import { Reason } from "@/components/Reason";
 import css from "./TargetMonitoring.module.css";
+import { NumericText } from "@/components/NumericText";
 export function TargetMonitoring({ id }: { id: string }) {
   const { t, locale } = useI18n();
   const { data, error, refresh } = useLiveData<Monitoring>(
@@ -65,16 +66,18 @@ export function TargetMonitoring({ id }: { id: string }) {
           <Stack gap="condensed">
             <strong>{t("telegramLastSeen")}</strong>
             <span>
-              {since !== null
-                ? t("lastSeenAgo").replace(
-                    "{duration}",
-                    formatDuration(since, locale),
-                  )
-                : lastSeen}
+              <NumericText>
+                {since !== null
+                  ? t("lastSeenAgo").replace(
+                      "{duration}",
+                      formatDuration(since, locale),
+                    )
+                  : lastSeen}
+              </NumericText>
             </span>
             {since !== null && (
               <time className={css.muted} dateTime={profile!.lastSeenAt!}>
-                {lastSeen}
+                <NumericText>{lastSeen}</NumericText>
               </time>
             )}
           </Stack>
@@ -102,7 +105,9 @@ export function TargetMonitoring({ id }: { id: string }) {
               {rows.map(([label, value]) => (
                 <Fragment key={label}>
                   <dt className={css.label}>{t(label)}</dt>
-                  <dd className={css.value}>{value}</dd>
+                  <dd className={css.value}>
+                    <NumericText>{value}</NumericText>
+                  </dd>
                 </Fragment>
               ))}
               <dt className={css.label}>{t("latestPollResult")}</dt>

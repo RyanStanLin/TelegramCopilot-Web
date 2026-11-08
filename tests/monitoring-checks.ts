@@ -1,4 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
+import { realtimeFixture } from "./realtime-fixture";
 
 export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
   const targets = await (await page.request.get("/api/backend/targets")).json();
@@ -9,41 +10,39 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
   const at = "2026-11-08T00:00:00Z";
   let count = 17;
   let coarse = false;
-  await page.route(`**/api/backend/targets/${target.id}/monitoring`, (route) =>
-    route.fulfill({
-      json: {
-        targetId: target.id,
-        enabled: true,
-        pollCount: count,
-        successfulPollCount: count - 2,
-        failedPollCount: 2,
-        lastPollStartedAt: at,
-        lastPollCompletedAt: at,
-        lastSuccessfulPollAt: at,
-        nextPollAt: "2026-11-08T00:00:05Z",
-        state: coarse ? "Unknown" : "Offline",
-        reason: "CachedReconciliation",
-        error: null,
-        isPolling: false,
-        now: at,
-        activity: {
-          timeZone: "Asia/Taipei",
-          today: { onlineSeconds: 3600, count: 1 },
-          week: { onlineSeconds: 9000, count: 3 },
-        },
-        profile: {
-          userId: 42,
-          displayName: "Alice Lee",
-          username: "alice",
-          hasAvatar: true,
-          avatarVersion: "qa-photo",
-          telegramStatus: coarse ? "userStatusRecently" : "userStatusOffline",
-          lastSeenAt: coarse ? null : "2026-11-07T22:00:00Z",
-          updatedAt: at,
-        },
-      },
-    }),
-  );
+  const realtime = await realtimeFixture(page);
+  const path = `/targets/${target.id}/monitoring`;
+  realtime.set(path, () => ({
+    targetId: target.id,
+    enabled: true,
+    pollCount: count,
+    successfulPollCount: count - 2,
+    failedPollCount: 2,
+    lastPollStartedAt: at,
+    lastPollCompletedAt: at,
+    lastSuccessfulPollAt: at,
+    nextPollAt: "2026-11-08T00:00:05Z",
+    state: coarse ? "Unknown" : "Offline",
+    reason: "CachedReconciliation",
+    error: null,
+    isPolling: false,
+    now: at,
+    activity: {
+      timeZone: "Asia/Taipei",
+      today: { onlineSeconds: 3600, count: 1 },
+      week: { onlineSeconds: 9000, count: 3 },
+    },
+    profile: {
+      userId: 42,
+      displayName: "Alice Lee",
+      username: "alice",
+      hasAvatar: true,
+      avatarVersion: "qa-photo",
+      telegramStatus: coarse ? "userStatusRecently" : "userStatusOffline",
+      lastSeenAt: coarse ? null : "2026-11-07T22:00:00Z",
+      updatedAt: at,
+    },
+  }));
   await page.route(`**/api/backend/targets/${target.id}/avatar?*`, (route) =>
     route.fulfill({
       contentType: "image/png",
@@ -76,6 +75,7 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
     )
     .toBe(true);
   count = 18;
+  realtime.push(path);
   await expect(region.getByText("18", { exact: true }).first()).toBeVisible();
   await page.screenshot({
     path: info.outputPath("target-monitoring-wide.png"),
@@ -91,6 +91,7 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
     path: info.outputPath("target-monitoring-mobile.png"),
   });
   coarse = true;
+  realtime.push(path);
   await expect(
     region.getByText("Telegram 仅返回“最近在线”，未提供精确时间", {
       exact: true,
@@ -108,7 +109,7 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
   ).json();
   expect(saved.settings.refreshSeconds).toBe(60);
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.unroute(`**/api/backend/targets/${target.id}/monitoring`);
+  realtime.remove(path);
   await page.unroute(`**/api/backend/targets/${target.id}/avatar?*`);
   return target.id as string;
 }

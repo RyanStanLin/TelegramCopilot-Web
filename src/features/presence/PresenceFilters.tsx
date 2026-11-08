@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Choice } from "@/components/Choice";
 import { useI18n } from "@/i18n/provider";
 import type { Resource } from "@/lib/types";
+import numeric from "@/components/NumericText.module.css";
 export type PresenceFilter = {
   target: string;
   from: string;
@@ -48,6 +49,7 @@ export function PresenceFilters({
             <FormControl key={key}>
               <FormControl.Label>{t(key)}</FormControl.Label>
               <TextInput
+                className={key === "timeZone" ? undefined : numeric.number}
                 size="medium"
                 value={values[key]}
                 onChange={(e) => change(key, e.target.value)}

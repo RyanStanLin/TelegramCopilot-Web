@@ -1,0 +1,4 @@
+.number {
+  font-family: var(--fontStack-monospace);
+  font-variant-numeric: tabular-nums;
+}

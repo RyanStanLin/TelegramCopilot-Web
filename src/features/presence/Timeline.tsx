@@ -25,6 +25,7 @@ export function Timeline({
       title={t("timeline")}
       rows={rows}
       rowId={(r) => `${r.id}-${r.start}`}
+      padding="condensed"
       columns={[
         { key: "state", label: "state", render: (r) => t(r.state) },
         {

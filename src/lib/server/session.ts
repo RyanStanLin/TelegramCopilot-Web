@@ -32,26 +32,28 @@ export async function issueSession(id: string) {
   });
 }
 export async function authenticated() {
-  const token = (await cookies()).get("copilot-session")?.value;
-  if (!token) return false;
+  return !!readSession((await cookies()).get("copilot-session")?.value);
+}
+export function readSession(token?: string) {
+  if (!token) return undefined;
   try {
     const [value, signature, extra] = token.split(".");
-    if (!value || !signature || extra) return false;
+    if (!value || !signature || extra) return undefined;
     const expected = Buffer.from(sign(value));
     const received = Buffer.from(signature);
     if (
       expected.length !== received.length ||
       !timingSafeEqual(expected, received)
     )
-      return false;
+      return undefined;
     const data = JSON.parse(Buffer.from(value, "base64url").toString());
-    return (
-      typeof data.exp === "number" &&
+    return typeof data.exp === "number" &&
       data.exp > Date.now() &&
       credential()?.id === data.id
-    );
+      ? { id: String(data.id), expires: data.exp as number }
+      : undefined;
   } catch {
-    return false;
+    return undefined;
   }
 }
 export function authError(error: unknown) {

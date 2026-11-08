@@ -5,6 +5,7 @@ import { useLiveData } from "@/lib/use-live-data";
 import { formatDuration } from "@/lib/duration";
 import type { MonitoringOverview } from "@/lib/monitoring-types";
 import css from "./Shared.module.css";
+import { NumericText } from "./NumericText";
 
 export function MonitoringPulse() {
   const { t, locale } = useI18n();
@@ -35,7 +36,7 @@ export function MonitoringPulse() {
       <span role="status">
         {t(
           error
-            ? "monitoringUnavailable"
+            ? "liveDisconnected"
             : data.health.status === "Healthy"
               ? "monitorRunning"
               : "monitorDegraded",
@@ -43,17 +44,27 @@ export function MonitoringPulse() {
       </span>
       <span>
         {t("pollCount")}:{" "}
-        <strong>{new Intl.NumberFormat(locale).format(data.pollCount)}</strong>
+        <strong>
+          <NumericText>
+            {new Intl.NumberFormat(locale).format(data.pollCount)}
+          </NumericText>
+        </strong>
       </span>
       <span>
         {t("enabledTargets")}:{" "}
-        {new Intl.NumberFormat(locale).format(data.enabledTargets)}
+        <NumericText>
+          {new Intl.NumberFormat(locale).format(data.enabledTargets)}
+        </NumericText>
       </span>
       <span>
-        {t("requestSuccess")}: <strong>{successRate}</strong>
+        {t("requestSuccess")}:{" "}
+        <strong>
+          <NumericText>{successRate}</NumericText>
+        </strong>
       </span>
       <span>
-        {t("heartbeatAge")}: {formatDuration(age, locale)}
+        {t("heartbeatAge")}:{" "}
+        <NumericText>{formatDuration(age, locale)}</NumericText>
       </span>
     </Stack>
   );

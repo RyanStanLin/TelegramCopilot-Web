@@ -110,7 +110,12 @@ export function History({ section }: { section: "events" | "deliveries" }) {
                 rowId={(r) => String(r.id)}
                 columns={fields.map((key) => ({
                   key,
-                  label: key === "resourceId" ? "resource" : key,
+                  label:
+                    key === "resourceId"
+                      ? "resource"
+                      : key === "error"
+                        ? "deliveryError"
+                        : key,
                   render: (r) => render(r[key], key),
                 }))}
               />

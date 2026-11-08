@@ -5,6 +5,7 @@ import { Loading } from "@/components/Status";
 import { LoginChallenge } from "./LoginChallenge";
 import { useAccountLogin } from "./use-account-login";
 import { formatDuration } from "@/lib/duration";
+import { NumericText } from "@/components/NumericText";
 
 const steps: Record<string, [string, string, string?]> = {
   authorizationStateWaitPhoneNumber: [
@@ -69,9 +70,12 @@ export function AccountLogin({ id, phone }: { id: string; phone: string }) {
           <div role="status" aria-live="polite">
             <Banner
               variant={ready ? "success" : "info"}
-              title={t(title)}
-              description={t(help)}
-            />
+              description={<NumericText>{t(help)}</NumericText>}
+            >
+              <Banner.Title>
+                <NumericText>{t(title)}</NumericText>
+              </Banner.Title>
+            </Banner>
           </div>
         )}
         {problem && (
@@ -79,9 +83,9 @@ export function AccountLogin({ id, phone }: { id: string; phone: string }) {
             variant="critical"
             title={t(problem) === problem ? t("loginRejected") : t(problem)}
             description={
-              wait
-                ? `${t("loginRetryAfter")} ${formatDuration(wait, locale)}`
-                : undefined
+              wait ? (
+                <NumericText>{`${t("loginRetryAfter")} ${formatDuration(wait, locale)}`}</NumericText>
+              ) : undefined
             }
           />
         )}

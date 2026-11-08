@@ -4,6 +4,8 @@ import NextLink from "next/link";
 import { useI18n } from "@/i18n/provider";
 import type { Kind, Resource } from "@/lib/types";
 import { RecordsTable } from "@/components/RecordsTable";
+import { NumericText } from "@/components/NumericText";
+import { ResourceAvatar } from "./ResourceAvatar";
 export function ResourceTable({
   kind,
   rows,
@@ -30,7 +32,21 @@ export function ResourceTable({
           label: "name",
           render: (r) => (
             <Link as={NextLink} href={`/${kind}/${r.id}`}>
-              {r.name}
+              <Stack
+                as="span"
+                direction="horizontal"
+                align="center"
+                gap="condensed"
+              >
+                {kind === "targets" && (
+                  <ResourceAvatar
+                    key={`${r.id}:${r.revision}`}
+                    id={r.id}
+                    revision={r.revision}
+                  />
+                )}
+                <NumericText>{r.name}</NumericText>
+              </Stack>
             </Link>
           ),
         },

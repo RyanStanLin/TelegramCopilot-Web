@@ -6,6 +6,7 @@ import { query } from "@/lib/api";
 import { formatDuration } from "@/lib/duration";
 import { calendarParts, type CalendarMonth } from "./calendar-months";
 import css from "./Contribution.module.css";
+import { NumericText } from "@/components/NumericText";
 export function MonthGrid({
   month,
   target,
@@ -48,7 +49,7 @@ export function MonthGrid({
               className={css.unobserved}
               aria-label={`${number.format(value)} · ${t("calendarUnavailable")}`}
             >
-              {number.format(value)}
+              <NumericText>{number.format(value)}</NumericText>
             </span>
           );
         const level =
@@ -72,7 +73,7 @@ export function MonthGrid({
             data-unknown={d.unknownSeconds > 0}
             aria-label={label}
           >
-            {number.format(value)}
+            <NumericText>{number.format(value)}</NumericText>
           </Link>
         );
       })}

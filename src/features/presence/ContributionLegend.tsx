@@ -2,6 +2,7 @@
 import { Stack } from "@primer/react";
 import { useI18n } from "@/i18n/provider";
 import css from "./Contribution.module.css";
+import { NumericText } from "@/components/NumericText";
 
 export function ContributionLegend() {
   const { t, locale } = useI18n();
@@ -22,7 +23,9 @@ export function ContributionLegend() {
             aria-hidden="true"
           />
           <span>
-            {range.map((value) => number.format(value)).join("–")}
+            <NumericText>
+              {range.map((value) => number.format(value)).join("–")}
+            </NumericText>
             {level === 4 && "+"}
           </span>
         </Stack>

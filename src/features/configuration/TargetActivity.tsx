@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n/provider";
 import { formatDuration } from "@/lib/duration";
 import type { TargetMonitoring } from "@/lib/monitoring-types";
 import css from "./TargetMonitoring.module.css";
+import { NumericText } from "@/components/NumericText";
 export function TargetActivity({ data }: { data: TargetMonitoring }) {
   const { t, locale } = useI18n();
   const activity = data.activity;
@@ -43,7 +44,9 @@ export function TargetActivity({ data }: { data: TargetMonitoring }) {
         {rows.map(([label, value]) => (
           <div key={label} className={css.stat}>
             <dt className={css.statLabel}>{t(label)}</dt>
-            <dd className={css.statValue}>{value}</dd>
+            <dd className={css.statValue}>
+              <NumericText>{value}</NumericText>
+            </dd>
           </div>
         ))}
       </dl>

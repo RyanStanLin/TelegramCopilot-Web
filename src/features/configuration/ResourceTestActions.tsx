@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n/provider";
 import { api } from "@/lib/api";
 import { Failure } from "@/components/Status";
 import { RuleValidation, type RuleCheck } from "./RuleValidation";
+import { NumericText } from "@/components/NumericText";
 
 type Delivery = {
   id: string;
@@ -137,12 +138,15 @@ export function ResourceTestActions({
                     ? "manualTestPartial"
                     : "manualTestFailed",
               )}
-              description={`${sent}/${total} ${t("deliveriesSent")}`}
+              description={
+                <NumericText>{`${sent}/${total} ${t("deliveriesSent")}`}</NumericText>
+              }
             />
             <ul>
               {result.deliveries.map((row, index) => (
                 <li key={row.id}>
-                  {t("testDelivery")} {index + 1}: {t(row.status)}
+                  {t("testDelivery")} <NumericText>{index + 1}</NumericText>:{" "}
+                  {t(row.status)}
                   {row.error ? ` · ${t(row.error)}` : ""}
                 </li>
               ))}

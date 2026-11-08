@@ -1,4 +1,7 @@
 .header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
   background: var(--page-header-bgColor);
   color: var(--fgColor-default);
   border-bottom: var(--borderWidth-thin) solid var(--borderColor-default);
@@ -12,6 +15,7 @@
 
 .content {
   min-inline-size: 0;
+  scroll-margin-block-start: var(--base-size-128);
 }
 
 .skip {
@@ -25,5 +29,5 @@
 
 .skip:focus {
   transform: none;
-  z-index: 1;
+  z-index: 2;
 }

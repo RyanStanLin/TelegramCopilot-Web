@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useI18n } from "@/i18n/provider";
 import { useLoad } from "@/lib/use-load";
 import { Failure, Loading } from "@/components/Status";
+import { NumericText } from "@/components/NumericText";
 export function SystemInfo() {
   const { t, locale } = useI18n();
   const [revision, refresh] = useState(0);
@@ -26,12 +27,14 @@ export function SystemInfo() {
           health.data && (
             <p>
               {t(health.data.status)} · {t("heartbeat")}:{" "}
-              {health.data.heartbeat
-                ? new Intl.DateTimeFormat(locale, {
-                    dateStyle: "medium",
-                    timeStyle: "medium",
-                  }).format(new Date(health.data.heartbeat))
-                : t("none")}
+              <NumericText>
+                {health.data.heartbeat
+                  ? new Intl.DateTimeFormat(locale, {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                    }).format(new Date(health.data.heartbeat))
+                  : t("none")}
+              </NumericText>
             </p>
           )
         )}

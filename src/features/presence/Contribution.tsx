@@ -9,6 +9,7 @@ import { calendarMonths } from "./calendar-months";
 import { MonthGrid } from "./MonthGrid";
 import { ContributionLegend } from "./ContributionLegend";
 import css from "./Contribution.module.css";
+import { NumericText } from "@/components/NumericText";
 export function Contribution({
   days,
   target,
@@ -51,7 +52,9 @@ export function Contribution({
         <Heading as="h2" variant="small">
           {t("calendarMonth")}
         </Heading>
-        <strong aria-live="polite">{title}</strong>
+        <strong aria-live="polite">
+          <NumericText>{title}</NumericText>
+        </strong>
         <div
           className={css.scroll}
           role="region"

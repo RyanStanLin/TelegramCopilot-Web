@@ -1,4 +1,6 @@
 {
+  "deliveryError": "失败原因",
+  "liveDisconnected": "实时连接已断开，正在重连",
   "mainNavigation": "主导航",
   "sectionNavigation": "当前分区",
   "openMenu": "打开导航菜单",

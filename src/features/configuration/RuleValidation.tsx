@@ -1,6 +1,7 @@
 "use client";
 import { Banner, Stack } from "@primer/react";
 import { useI18n } from "@/i18n/provider";
+import { NumericText } from "@/components/NumericText";
 export type RuleCheck = {
   valid: boolean;
   errors: { field: string; code: string }[];
@@ -46,12 +47,20 @@ export function RuleValidation({ value }: { value: RuleCheck }) {
         <section aria-label={t("notificationPreview")}>
           <p>{t("previewOnly")}</p>
           <p>
-            {t("destinations")}: {preview.destination} · {preview.deviceCount}{" "}
-            {t("devices")}
+            {t("destinations")}: {preview.destination} ·{" "}
+            <NumericText>{preview.deviceCount}</NumericText> {t("devices")}
           </p>
-          <strong>{preview.title}</strong>
-          {preview.subtitle && <p>{preview.subtitle}</p>}
-          <p>{preview.body}</p>
+          <strong>
+            <NumericText>{preview.title}</NumericText>
+          </strong>
+          {preview.subtitle && (
+            <p>
+              <NumericText>{preview.subtitle}</NumericText>
+            </p>
+          )}
+          <p>
+            <NumericText>{preview.body}</NumericText>
+          </p>
           {preview.group && (
             <p>
               {t("group")}: {preview.group}

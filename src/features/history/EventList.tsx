@@ -6,6 +6,7 @@ import { Reason } from "@/components/Reason";
 import { formatDuration } from "@/lib/duration";
 import type { Row } from "@/lib/types";
 import css from "./EventList.module.css";
+import { NumericText } from "@/components/NumericText";
 export function EventList({ rows }: { rows: Row[] }) {
   const { t, locale } = useI18n();
   const date = new Intl.DateTimeFormat(locale, {
@@ -40,16 +41,16 @@ export function EventList({ rows }: { rows: Row[] }) {
                     {t(String(r.type))}
                   </strong>
                   <time className={css.date} dateTime={String(r.at)}>
-                    {date.format(new Date(String(r.at)))}
+                    <NumericText>{date.format(new Date(String(r.at)))}</NumericText>
                   </time>
                 </Stack>
                 {r.type === "Offline" && (
                   <span>
                     {t("onlineSeconds")}:{" "}
-                    {formatDuration(
+                    <NumericText>{formatDuration(
                       r.onlineSeconds == null ? null : Number(r.onlineSeconds),
                       locale,
-                    )}
+                    )}</NumericText>
                   </span>
                 )}
                 <Reason value={String(r.detail ?? "")} />

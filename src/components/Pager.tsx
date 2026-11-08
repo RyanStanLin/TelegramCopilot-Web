@@ -3,6 +3,7 @@ import { Link, Pagination, Stack } from "@primer/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useI18n } from "@/i18n/provider";
 import css from "./Pager.module.css";
+import { NumericText } from "./NumericText";
 export function Pager({
   page,
   total,
@@ -36,9 +37,11 @@ export function Pager({
   return (
     <Stack gap="condensed" align="center">
       <span className={css.summary}>
-        {t("pageSummary")
-          .replace("{page}", number.format(page))
-          .replace("{pages}", number.format(pages))}
+        <NumericText>
+          {t("pageSummary")
+            .replace("{page}", number.format(page))
+            .replace("{pages}", number.format(pages))}
+        </NumericText>
       </span>
       <Pagination
         pageCount={pages}
@@ -67,11 +70,13 @@ export function Pager({
                   : t("pageNumber").replace("{page}", number.format(n))
             }
           >
-            {props.rel === "prev"
-              ? t("previous")
-              : props.rel === "next"
-                ? t("next")
-                : number.format(n)}
+            {props.rel === "prev" ? (
+              t("previous")
+            ) : props.rel === "next" ? (
+              t("next")
+            ) : (
+              <NumericText>{number.format(n)}</NumericText>
+            )}
           </Link>
         )}
       />

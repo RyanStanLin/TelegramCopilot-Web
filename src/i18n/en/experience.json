@@ -1,4 +1,6 @@
 {
+  "deliveryError": "Failure reason",
+  "liveDisconnected": "Live updates disconnected; reconnecting",
   "mainNavigation": "Main navigation",
   "sectionNavigation": "Current section",
   "openMenu": "Open navigation menu",
