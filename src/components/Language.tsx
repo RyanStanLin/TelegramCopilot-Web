@@ -1,34 +1,48 @@
 "use client";
-import { Button, FormControl, Select, Stack } from "@primer/react";
-import { useEffect, useState } from "react";
+import { ActionList, ActionMenu, IconButton } from "@primer/react";
+import { GlobeIcon } from "@primer/octicons-react";
 import { useI18n, type Locale } from "@/i18n/provider";
-export function Language() {
+const languages: { value: Locale; label: string; flag: string }[] = [
+  { value: "zh-CN", label: "简体中文", flag: "🇨🇳" },
+  { value: "en", label: "English", flag: "🇬🇧" },
+];
+export function Language({ compact = false }: { compact?: boolean }) {
   const { locale, setLocale, t } = useI18n();
-  const [value, setValue] = useState<Locale>(locale);
-  useEffect(() => setValue(locale), [locale]);
+  const current = languages.find((l) => l.value === locale)!;
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setLocale(value);
-      }}
-    >
-      <Stack direction="horizontal" align="end" gap="condensed" wrap="wrap">
-        <FormControl>
-          <FormControl.Label>{t("language")}</FormControl.Label>
-          <Select
+    <ActionMenu>
+      {compact ? (
+        <ActionMenu.Anchor>
+          <IconButton
             size="medium"
-            value={value}
-            onChange={(e) => setValue(e.target.value as Locale)}
-          >
-            <Select.Option value="zh-CN">简体中文</Select.Option>
-            <Select.Option value="en">English</Select.Option>
-          </Select>
-        </FormControl>
-        <Button type="submit" size="medium">
-          {t("languageApply")}
-        </Button>
-      </Stack>
-    </form>
+            icon={GlobeIcon}
+            aria-label={`${t("language")}: ${current.label}`}
+          />
+        </ActionMenu.Anchor>
+      ) : (
+        <ActionMenu.Button
+          size="medium"
+          aria-label={`${t("language")}: ${current.label}`}
+        >
+          <span aria-hidden="true">{current.flag}</span> {current.label}
+        </ActionMenu.Button>
+      )}
+      <ActionMenu.Overlay align="end">
+        <ActionList selectionVariant="single">
+          {languages.map((l) => (
+            <ActionList.Item
+              key={l.value}
+              selected={locale === l.value}
+              onSelect={() => setLocale(l.value)}
+            >
+              <ActionList.LeadingVisual>
+                <span aria-hidden="true">{l.flag}</span>
+              </ActionList.LeadingVisual>
+              {l.label}
+            </ActionList.Item>
+          ))}
+        </ActionList>
+      </ActionMenu.Overlay>
+    </ActionMenu>
   );
 }

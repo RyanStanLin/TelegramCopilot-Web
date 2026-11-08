@@ -88,6 +88,7 @@ export function Presence() {
               />
               <Pager
                 page={bucketPage}
+                parameter="bucketPage"
                 total={statistics.data.buckets.total}
                 size={25}
                 change={(p) => navigate({ bucketPage: p })}

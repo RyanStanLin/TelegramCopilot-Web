@@ -1,6 +1,7 @@
 "use client";
-import { Button, FormControl, Select, Stack, TextInput } from "@primer/react";
+import { Button, FormControl, Stack, TextInput } from "@primer/react";
 import { useState } from "react";
+import { Choice } from "@/components/Choice";
 import { useI18n } from "@/i18n/provider";
 import type { Resource } from "@/lib/types";
 export type PresenceFilter = {
@@ -33,21 +34,16 @@ export function PresenceFilters({
     >
       <Stack gap="normal">
         <Stack direction="horizontal" gap="normal" wrap="wrap" align="end">
-          <FormControl>
-            <FormControl.Label>{t("targetId")}</FormControl.Label>
-            <Select
-              size="medium"
-              value={values.target}
-              onChange={(e) => change("target", e.target.value)}
-            >
-              <Select.Option value="">{t("none")}</Select.Option>
-              {targets.map((r) => (
-                <Select.Option key={r.id} value={r.id}>
-                  {r.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </FormControl>
+          <Choice
+            label={t("targetId")}
+            value={values.target}
+            searchable
+            change={(v) => change("target", v)}
+            options={[
+              { value: "", label: t("none") },
+              ...targets.map((r) => ({ value: r.id, label: r.name })),
+            ]}
+          />
           {(["from", "to", "timeZone"] as const).map((key) => (
             <FormControl key={key}>
               <FormControl.Label>{t(key)}</FormControl.Label>
@@ -58,35 +54,27 @@ export function PresenceFilters({
               />
             </FormControl>
           ))}
-          <FormControl>
-            <FormControl.Label>{t("period")}</FormControl.Label>
-            <Select
-              size="medium"
-              value={values.period}
-              onChange={(e) => change("period", e.target.value)}
-            >
-              {["day", "week", "month", "year"].map((p) => (
-                <Select.Option key={p} value={p}>
-                  {t(p)}
-                </Select.Option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <FormControl.Label>{t("state")}</FormControl.Label>
-            <Select
-              size="medium"
-              value={values.state}
-              onChange={(e) => change("state", e.target.value)}
-            >
-              <Select.Option value="">{t("all")}</Select.Option>
-              {["Online", "Offline", "Unknown"].map((p) => (
-                <Select.Option key={p} value={p}>
-                  {t(p)}
-                </Select.Option>
-              ))}
-            </Select>
-          </FormControl>
+          <Choice
+            label={t("period")}
+            value={values.period}
+            change={(v) => change("period", v)}
+            options={["day", "week", "month", "year"].map((v) => ({
+              value: v,
+              label: t(v),
+            }))}
+          />
+          <Choice
+            label={t("state")}
+            value={values.state}
+            change={(v) => change("state", v)}
+            options={[
+              { value: "", label: t("all") },
+              ...["Online", "Offline", "Unknown"].map((v) => ({
+                value: v,
+                label: t(v),
+              })),
+            ]}
+          />
           <Button size="medium" type="submit">
             {t("apply")}
           </Button>

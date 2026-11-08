@@ -1,12 +1,14 @@
 "use client";
-import { formatDuration } from "@/lib/duration";
-import { Heading, Link, Stack } from "@primer/react";
-import NextLink from "next/link";
+import { Heading, Stack } from "@primer/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useId, useRef } from "react";
 import { useI18n } from "@/i18n/provider";
-import { query } from "@/lib/api";
+import { Pager } from "@/components/Pager";
 import type { Bucket } from "@/lib/types";
-import css from "./Contribution.module.css";
+import { calendarMonths } from "./calendar-months";
+import { MonthGrid } from "./MonthGrid";
 import { ContributionLegend } from "./ContributionLegend";
+import css from "./Contribution.module.css";
 export function Contribution({
   days,
   target,
@@ -17,74 +19,88 @@ export function Contribution({
   timeZone: string;
 }) {
   const { t, locale } = useI18n();
-  const day = new Intl.DateTimeFormat(locale, { timeZone, dateStyle: "long" });
-  const number = new Intl.NumberFormat(locale);
-  const labels = new Intl.DateTimeFormat(locale, {
-    weekday: "short",
+  const params = useSearchParams();
+  const path = usePathname();
+  const router = useRouter();
+  const id = useId();
+  const swiped = useRef(false);
+  const pointer = useRef<{ x: number; y: number } | null>(null);
+  const months = calendarMonths(days, timeZone);
+  const page = Math.min(
+    months.length,
+    Math.max(1, Number(params.get("calendarPage")) || months.length),
+  );
+  const month = months[page - 1];
+  const href = (n: number) => {
+    const next = new URLSearchParams(params.toString());
+    next.set("calendarPage", String(n));
+    return `${path}?${next}`;
+  };
+  const change = (n: number) => {
+    if (n >= 1 && n <= months.length) router.push(href(n), { scroll: false });
+  };
+  if (!month) return null;
+  const title = new Intl.DateTimeFormat(locale, {
+    month: "long",
+    year: "numeric",
     timeZone: "UTC",
-  });
-  const order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const offset = days[0]
-    ? order.indexOf(
-        new Intl.DateTimeFormat("en", { weekday: "short", timeZone }).format(
-          new Date(days[0].from),
-        ),
-      )
-    : 0;
+  }).format(new Date(Date.UTC(month.year, month.month - 1, 1)));
   return (
-    <section>
-      <Stack gap="condensed">
+    <section id={id} tabIndex={-1} aria-label={t("calendarMonth")}>
+      <Stack gap="normal">
         <Heading as="h2" variant="small">
-          {t("contributions")}
+          {t("calendarMonth")}
         </Heading>
-        {days.length > 0 && (
-          <span>
-            {day.format(new Date(days[0].from))} –{" "}
-            {day.format(new Date(days[days.length - 1].from))}
-          </span>
-        )}
+        <strong aria-live="polite">{title}</strong>
         <div
           className={css.scroll}
           role="region"
-          aria-label={t("contributions")}
+          aria-label={`${t("calendarMonth")} · ${title}`}
           tabIndex={0}
+          onClickCapture={(e) => {
+            if (swiped.current) {
+              e.preventDefault();
+              e.stopPropagation();
+              swiped.current = false;
+            }
+          }}
+          onPointerDown={(e) => {
+            swiped.current = false;
+            if (e.pointerType === "touch") {
+              pointer.current = { x: e.clientX, y: e.clientY };
+            }
+          }}
+          onPointerCancel={() => {
+            pointer.current = null;
+          }}
+          onPointerUp={(e) => {
+            const start = pointer.current;
+            pointer.current = null;
+            if (!start) return;
+            const distance = e.clientX - start.x;
+            if (
+              Math.abs(distance) > 48 &&
+              Math.abs(distance) > Math.abs(e.clientY - start.y)
+            ) {
+              swiped.current = true;
+              e.preventDefault();
+              change(page + (distance < 0 ? 1 : -1));
+            }
+          }}
         >
-          <div className={css.calendar}>
-            {order.map((value, index) => (
-              <span key={value} className={css.weekday}>
-                {labels.format(new Date(Date.UTC(2026, 0, 5 + index, 12)))}
-              </span>
-            ))}
-            {Array.from({ length: offset }, (_, index) => (
-              <span key={`empty-${index}`} aria-hidden="true" />
-            ))}
-            {days.map((d) => {
-              const level =
-                d.count === 0
-                  ? 0
-                  : d.count < 3
-                    ? 1
-                    : d.count < 6
-                      ? 2
-                      : d.count < 10
-                        ? 3
-                        : 4;
-              const label = `${day.format(new Date(d.from))}: ${t("count")} ${number.format(d.count)}, ${t("onlineSeconds")} ${formatDuration(d.onlineSeconds, locale)}, ${t("unknownSeconds")} ${formatDuration(d.unknownSeconds, locale)}`;
-              return (
-                <Link
-                  as={NextLink}
-                  key={d.from}
-                  href={`/presence?${query({ target, from: d.from, to: d.to, timeZone, period: "day" })}`}
-                  className={css.cell}
-                  data-level={level}
-                  data-unknown={d.unknownSeconds > 0}
-                  aria-label={label}
-                />
-              );
-            })}
-          </div>
+          <MonthGrid month={month} target={target} timeZone={timeZone} />
         </div>
         <ContributionLegend />
+        {months.length > 1 && <p className={css.hint}>{t("calendarSwipe")}</p>}
+        <Pager
+          page={page}
+          total={months.length}
+          size={1}
+          change={change}
+          hrefBuilder={href}
+          parameter="calendarPage"
+          focusId={id}
+        />
       </Stack>
     </section>
   );

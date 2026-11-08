@@ -9,7 +9,7 @@
 
 ## Updates
 
-A normal commit/push to `main` runs CSS validation, production build, TypeScript and both browser integration tests. The tests use a disposable local backend at a reviewed fixed source commit, disabled Telegram fixtures and a virtual WebAuthn authenticator. They never use production data or send messages.
+A normal commit/push to `main` runs CSS validation, production build, TypeScript and all 11 browser checks. The tests use a disposable local backend at a reviewed fixed source commit, disabled Telegram fixtures and a virtual WebAuthn authenticator. They never use production data or send messages. The workflow includes mobile navigation, localized templates, target statistics, calendar touch paging, animated loading, manual test controls and Passkey reauthentication.
 
 An independent cache-invalidation job and successful checks gate the reusable release. GitHub builds linux/amd64, pushes the repository-ID-specific GHCR image and deploys its digest using GitHub OIDC. PRs only validate. No SSH keys or platform administrator secrets belong in this repository.
 

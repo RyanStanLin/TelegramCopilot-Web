@@ -8,6 +8,7 @@ export function formValues(kind: Kind, input: Record<string, unknown> = {}) {
     if (f.type === "duration" && typeof values[f.key] === "number")
       values[f.key] = formatDuration(Number(values[f.key]), "en");
   });
+  if (kind === "rules") values.language = input.language ?? null;
   if (kind === "destinations") {
     const e = input.encryption as {
       key: string;

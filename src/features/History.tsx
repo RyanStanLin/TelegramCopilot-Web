@@ -7,6 +7,7 @@ import { query } from "@/lib/api";
 import { useLoad } from "@/lib/use-load";
 import type { Row, Page } from "@/lib/types";
 import { Failure, Loading, Pager } from "@/components/Status";
+import { EventList } from "./history/EventList";
 import { RecordsTable } from "@/components/RecordsTable";
 import { HistoryFilters } from "./history/HistoryFilters";
 import { formatDuration } from "@/lib/duration";
@@ -100,16 +101,20 @@ export function History({ section }: { section: "events" | "deliveries" }) {
       ) : (
         data.data && (
           <>
-            <RecordsTable<Row>
-              title={t(section)}
-              rows={data.data.items}
-              rowId={(r) => String(r.id)}
-              columns={fields.map((key) => ({
-                key,
-                label: key === "resourceId" ? "resource" : key,
-                render: (r) => render(r[key], key),
-              }))}
-            />
+            {section === "events" ? (
+              <EventList rows={data.data.items} />
+            ) : (
+              <RecordsTable<Row>
+                title={t(section)}
+                rows={data.data.items}
+                rowId={(r) => String(r.id)}
+                columns={fields.map((key) => ({
+                  key,
+                  label: key === "resourceId" ? "resource" : key,
+                  render: (r) => render(r[key], key),
+                }))}
+              />
+            )}
             <Pager
               page={page}
               total={data.data.total}

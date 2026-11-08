@@ -2,6 +2,7 @@
 import { useI18n } from "@/i18n/provider";
 import { RecordsTable } from "@/components/RecordsTable";
 import type { Interval } from "@/lib/types";
+import { Reason } from "@/components/Reason";
 import { formatDuration } from "@/lib/duration";
 export function Timeline({
   rows,
@@ -45,7 +46,7 @@ export function Timeline({
         {
           key: "reason",
           label: "reason",
-          render: (r) => t(r.reason),
+          render: (r) => <Reason value={r.reason} />,
         },
         {
           key: "boundary",

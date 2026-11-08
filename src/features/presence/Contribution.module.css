@@ -1,5 +1,8 @@
 .scroll {
   overflow-x: auto;
+  touch-action: pan-y;
+  border: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
 }
 
 .calendar {
@@ -60,4 +63,17 @@
 .cell:focus-visible {
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
+}
+
+.unobserved {
+  color: var(--fgColor-muted);
+  font: var(--text-body-shorthand-small);
+  text-align: center;
+  align-content: center;
+}
+
+.hint {
+  margin: 0;
+  color: var(--fgColor-muted);
+  font: var(--text-body-shorthand-small);
 }

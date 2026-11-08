@@ -1,5 +1,6 @@
 "use client";
-import { Button, FormControl, Select, Stack, TextInput } from "@primer/react";
+import { Button, FormControl, Stack, TextInput } from "@primer/react";
+import { Choice } from "@/components/Choice";
 import { useI18n } from "@/i18n/provider";
 type Props = {
   section: "events" | "deliveries";
@@ -53,17 +54,13 @@ export function HistoryFilters({
             ))}
           </>
         )}
-        <FormControl>
-          <FormControl.Label>
-            {t(section === "events" ? "type" : "channel")}
-          </FormControl.Label>
-          <Select
-            size="medium"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <Select.Option value="">{t("all")}</Select.Option>
-            {(section === "events"
+        <Choice
+          label={t(section === "events" ? "type" : "channel")}
+          value={filter}
+          change={setFilter}
+          options={[
+            { value: "", label: t("all") },
+            ...(section === "events"
               ? [
                   "Online",
                   "Offline",
@@ -78,13 +75,9 @@ export function HistoryFilters({
                   "MonitorRestored",
                 ]
               : ["Telegram", "Bark"]
-            ).map((v) => (
-              <Select.Option key={v} value={v}>
-                {t(v)}
-              </Select.Option>
-            ))}
-          </Select>
-        </FormControl>
+            ).map((v) => ({ value: v, label: t(v) })),
+          ]}
+        />
         <FormControl>
           <FormControl.Label>
             {t(section === "events" ? "targetId" : "resource")}

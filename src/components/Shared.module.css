@@ -1,0 +1,33 @@
+.srOnly {
+  position: absolute;
+  inline-size: var(--borderWidth-thin);
+  block-size: var(--borderWidth-thin);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.section {
+  border: var(--borderWidth-thin) solid var(--borderColor-default);
+  border-radius: var(--borderRadius-medium);
+  padding: var(--stack-padding-normal);
+}
+
+.sectionTitle {
+  margin: 0;
+  padding-block-end: var(--stack-gap-normal);
+  border-block-end: var(--borderWidth-thin) solid var(--borderColor-default);
+}
+
+.muted {
+  margin: 0;
+  color: var(--fgColor-muted);
+  font: var(--text-body-shorthand-small);
+}
+
+.content {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}

@@ -1,34 +1,16 @@
 "use client";
-import { Avatar, Button, Heading, Stack } from "@primer/react";
-import { PersonIcon } from "@primer/octicons-react";
-import { Fragment, useState } from "react";
+import { Heading, IconButton, Stack } from "@primer/react";
+import { SyncIcon } from "@primer/octicons-react";
+import { Fragment } from "react";
 import { useI18n } from "@/i18n/provider";
 import { Failure, Loading } from "@/components/Status";
 import { useLiveData } from "@/lib/use-live-data";
 import { formatDuration } from "@/lib/duration";
 import type { TargetMonitoring as Monitoring } from "@/lib/monitoring-types";
+import { TargetActivity } from "./TargetActivity";
+import { TargetIdentity } from "./TargetIdentity";
+import { Reason } from "@/components/Reason";
 import css from "./TargetMonitoring.module.css";
-
-function ProfileAvatar({
-  id,
-  version,
-}: {
-  id: string;
-  version?: string | null;
-}) {
-  const [failed, setFailed] = useState(false);
-  return failed ? (
-    <PersonIcon size={48} aria-hidden="true" />
-  ) : (
-    <Avatar
-      size={64}
-      alt=""
-      src={`/api/backend/targets/${id}/avatar?v=${encodeURIComponent(version ?? "")}`}
-      onError={() => setFailed(true)}
-    />
-  );
-}
-
 export function TargetMonitoring({ id }: { id: string }) {
   const { t, locale } = useI18n();
   const { data, error, refresh } = useLiveData<Monitoring>(
@@ -47,26 +29,22 @@ export function TargetMonitoring({ id }: { id: string }) {
     profile?.telegramStatus === "userStatusOffline" && profile.lastSeenAt
       ? date(profile.lastSeenAt)
       : t(profile?.telegramStatus ?? "NoObservation");
-  const age = data.lastPollCompletedAt
-    ? Math.max(
-        0,
-        (Date.parse(data.now) - Date.parse(data.lastPollCompletedAt)) / 1000,
-      )
-    : null;
+  const since =
+    profile?.lastSeenAt && profile.telegramStatus === "userStatusOffline"
+      ? Math.max(
+          0,
+          (Date.parse(data.now) - Date.parse(profile.lastSeenAt)) / 1000,
+        )
+      : null;
   const next = data.nextPollAt
     ? Math.max(0, (Date.parse(data.nextPollAt) - Date.parse(data.now)) / 1000)
     : null;
   const number = (value: number) => new Intl.NumberFormat(locale).format(value);
   const rows = [
-    ["telegramLastSeen", lastSeen],
-    ["telegramProfileUpdated", date(profile?.updatedAt)],
     ["pollCount", number(data.pollCount)],
     ["successfulPolls", number(data.successfulPollCount)],
     ["failedPolls", number(data.failedPollCount)],
-    [
-      "lastPoll",
-      `${date(data.lastPollCompletedAt)}${age == null ? "" : ` · ${formatDuration(age, locale)} ${t("ago")}`}`,
-    ],
+    ["lastPoll", date(data.lastPollCompletedAt)],
     ["lastSuccessfulPoll", date(data.lastSuccessfulPollAt)],
     [
       "nextPoll",
@@ -76,50 +54,66 @@ export function TargetMonitoring({ id }: { id: string }) {
           : formatDuration(next, locale)
         : t("MonitoringDisabled"),
     ],
-    [
-      "latestPollResult",
-      t(data.enabled ? data.reason : "MonitoringDisabled"),
-    ],
+    ["telegramProfileUpdated", date(profile?.updatedAt)],
   ];
   return (
-    <section aria-labelledby="target-monitoring-heading">
-      <Stack gap="normal">
-        <Heading id="target-monitoring-heading" as="h2" variant="small">
-          {t("targetLiveStatus")}
-        </Heading>
-        <Stack direction="horizontal" gap="normal" align="center" wrap="wrap">
-          {profile?.hasAvatar ? (
-            <ProfileAvatar
-              key={profile.avatarVersion}
-              id={id}
-              version={profile.avatarVersion}
-            />
-          ) : (
-            <PersonIcon size={48} aria-hidden="true" />
-          )}
-          <Stack gap="condensed">
-            <strong>
-              {profile?.displayName || t("telegramProfilePending")}
-            </strong>
-            {profile?.username && <span>@{profile.username}</span>}
-            <span>{t(data.enabled ? data.state : "MonitoringDisabled")}</span>
-          </Stack>
-        </Stack>
-        <p>{t("pollCountHelp")}</p>
+    <section aria-label={t("targetLiveStatus")}>
+      <Stack gap="spacious">
+        <TargetIdentity key={profile?.avatarVersion} data={data} />
         {error && <Failure message="monitoringUnavailable" retry={refresh} />}
-        <dl className={css.details}>
-          {rows.map(([label, value]) => (
-            <Fragment key={label}>
-              <dt className={css.label}>{t(label)}</dt>
-              <dd className={css.value}>{value}</dd>
-            </Fragment>
-          ))}
-        </dl>
-        <Stack direction="horizontal">
-          <Button size="medium" onClick={refresh}>
-            {t("statusRefresh")}
-          </Button>
-        </Stack>
+        <section className={css.lastSeen} aria-label={t("telegramLastSeen")}>
+          <Stack gap="condensed">
+            <strong>{t("telegramLastSeen")}</strong>
+            <span>
+              {since !== null
+                ? t("lastSeenAgo").replace(
+                    "{duration}",
+                    formatDuration(since, locale),
+                  )
+                : lastSeen}
+            </span>
+            {since !== null && (
+              <time className={css.muted} dateTime={profile!.lastSeenAt!}>
+                {lastSeen}
+              </time>
+            )}
+          </Stack>
+        </section>
+        <TargetActivity data={data} />
+        <section className={css.polling} aria-labelledby="polling-heading">
+          <Stack gap="normal">
+            <Stack
+              direction="horizontal"
+              align="center"
+              justify="space-between"
+            >
+              <Heading as="h2" variant="small" id="polling-heading">
+                {t("pollingDetails")}
+              </Heading>
+              <IconButton
+                size="medium"
+                icon={SyncIcon}
+                aria-label={t("statusRefresh")}
+                onClick={refresh}
+              />
+            </Stack>
+            <p className={css.muted}>{t("pollCountHelp")}</p>
+            <dl className={css.details}>
+              {rows.map(([label, value]) => (
+                <Fragment key={label}>
+                  <dt className={css.label}>{t(label)}</dt>
+                  <dd className={css.value}>{value}</dd>
+                </Fragment>
+              ))}
+              <dt className={css.label}>{t("latestPollResult")}</dt>
+              <dd className={css.value}>
+                <Reason
+                  value={data.enabled ? data.reason : "MonitoringDisabled"}
+                />
+              </dd>
+            </dl>
+          </Stack>
+        </section>
       </Stack>
     </section>
   );

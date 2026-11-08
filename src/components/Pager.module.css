@@ -1,0 +1,9 @@
+.summary {
+  color: var(--fgColor-muted);
+  font: var(--text-body-shorthand-small);
+}
+
+.pagination {
+  max-inline-size: 100%;
+  padding: 0;
+}

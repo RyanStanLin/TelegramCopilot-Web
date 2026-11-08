@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { choose } from "./choice-checks";
 import { configurationFixtures } from "./configuration-fixtures";
 
 export async function verifyConfigurationPages(page: Page) {
@@ -15,7 +16,13 @@ export async function verifyConfigurationPages(page: Page) {
     for (const field of fixture.fields) {
       const control = form.getByLabel(new RegExp(`^${field.label}\\s*\\*?$`));
       if ("option" in field)
-        await control.selectOption({ label: field.option });
+        await choose(
+          form,
+          page,
+          field.label,
+          field.option,
+          ["Telegram 账号", "Bark 推送目标", "监控对象"].includes(field.label),
+        );
       else if ("checked" in field) await control.setChecked(field.checked);
       else await control.fill(field.value);
     }
@@ -39,7 +46,10 @@ export async function verifyConfigurationPages(page: Page) {
         .toBe(true);
       await page.goto("/events");
       await expect(
-        page.getByRole("cell", { name: fixture.name, exact: true }).first(),
+        page
+          .getByRole("region", { name: "事件日志", exact: true })
+          .getByText(new RegExp(fixture.name))
+          .first(),
       ).toBeVisible();
       await page.goto("/accounts");
     }
@@ -73,9 +83,9 @@ export async function verifyConfigurationPages(page: Page) {
   for (const fixture of [...configurationFixtures].reverse()) {
     await page.goto(`/${fixture.kind}`);
     const deleteButton = page.getByRole("button", {
-        name: `删除 ${fixture.name} updated`,
-        exact: true,
-      });
+      name: `删除 ${fixture.name} updated`,
+      exact: true,
+    });
     await deleteButton.click();
     if (fixture.kind === "settings") {
       await page.keyboard.press("Escape");

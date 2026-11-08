@@ -1,5 +1,29 @@
 .header {
-  background-color: var(--bgColor-muted);
+  background: var(--page-header-bgColor);
   color: var(--fgColor-default);
   border-bottom: var(--borderWidth-thin) solid var(--borderColor-default);
+}
+
+.brand {
+  color: var(--fgColor-default);
+  font: var(--text-body-shorthand-large);
+  font-weight: var(--base-text-weight-semibold);
+}
+
+.content {
+  min-inline-size: 0;
+}
+
+.skip {
+  position: absolute;
+  inset-block-start: var(--stack-padding-normal);
+  inset-inline-start: var(--stack-padding-normal);
+  background: var(--bgColor-default);
+  padding: var(--stack-padding-condensed);
+  transform: translateY(-200%);
+}
+
+.skip:focus {
+  transform: none;
+  z-index: 1;
 }

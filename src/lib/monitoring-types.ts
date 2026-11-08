@@ -1,3 +1,4 @@
+import type { Bucket } from "./types";
 export type MonitoringOverview = {
   now: string;
   health: {
@@ -6,6 +7,8 @@ export type MonitoringOverview = {
     nativeAvailable: boolean;
   };
   pollCount: number;
+  successfulPollCount?: number;
+  failedPollCount?: number;
   enabledTargets: number;
   lastPollAt?: string | null;
 };
@@ -24,6 +27,7 @@ export type TargetMonitoring = {
   error?: string | null;
   isPolling: boolean;
   now: string;
+  activity?: { timeZone: string; today: Bucket; week: Bucket } | null;
   profile?: {
     userId: number;
     displayName: string;

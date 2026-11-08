@@ -56,7 +56,7 @@ export function ResourceTable({
               )}
               <Button
                 as={NextLink}
-                href={`/${kind}/${r.id}`}
+                href={`/${kind}/${r.id}${kind === "targets" ? "?tab=settings" : ""}`}
                 size="medium"
                 aria-label={`${t("edit")} ${r.name}`}
               >

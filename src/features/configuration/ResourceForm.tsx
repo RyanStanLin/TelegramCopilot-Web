@@ -1,119 +1,54 @@
 "use client";
-import {
-  Button,
-  Checkbox,
-  FormControl,
-  PageHeader,
-  Stack,
-  TextInput,
-} from "@primer/react";
+import { Breadcrumbs, PageHeader, Stack } from "@primer/react";
+import NextLink from "next/link";
 import { useState } from "react";
 import { Confirm } from "@/components/Confirm";
 import { useI18n } from "@/i18n/provider";
 import type { Kind } from "@/lib/types";
 import { Failure, Loading } from "@/components/Status";
-import { Fields } from "./Fields";
 import { AccountLogin } from "./AccountLogin";
-import { TargetMonitoring } from "./TargetMonitoring";
+import { TargetDetail } from "./TargetDetail";
 import { ResourceTestActions } from "./ResourceTestActions";
+import { ResourceEditorForm } from "./ResourceEditorForm";
 import { settingsValues } from "./form-values";
 import { useResourceEditor } from "./use-resource-editor";
 export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
   const { t } = useI18n();
   const [cancel, setCancel] = useState(false);
-  const {
-    router,
-    form,
-    existing,
-    name,
-    setName,
-    enabled,
-    setEnabled,
-    values,
-    setValues,
-    references,
-    dirty,
-    setDirty,
-    busy,
-    error,
-    invalid,
-    save,
-  } = useResourceEditor(kind, id);
+  const editor = useResourceEditor(kind, id);
+  const { router, existing, name, enabled, values, dirty, setDirty } = editor;
   if (existing.loading) return <Loading />;
   if (existing.error) return <Failure />;
+  const form = (
+    <ResourceEditorForm
+      kind={kind}
+      id={id}
+      editor={editor}
+      cancel={() => (dirty ? setCancel(true) : router.push(`/${kind}`))}
+    />
+  );
   return (
     <Stack gap="spacious">
+      <Breadcrumbs aria-label={t("breadcrumbNavigation")}>
+        <Breadcrumbs.Item as={NextLink} href={`/${kind}`}>
+          {t(kind)}
+        </Breadcrumbs.Item>
+        <Breadcrumbs.Item selected>
+          {id === "new" ? t("new") : existing.data?.name}
+        </Breadcrumbs.Item>
+      </Breadcrumbs>
       <PageHeader>
         <PageHeader.TitleArea>
           <PageHeader.Title as="h1">
-            {t(id === "new" ? "new" : "edit")} · {t(kind)}
+            {id === "new" ? `${t("new")} · ${t(kind)}` : existing.data?.name}
           </PageHeader.Title>
         </PageHeader.TitleArea>
       </PageHeader>
-      {kind === "targets" && id !== "new" && (
-        <TargetMonitoring key={id} id={id} />
+      {kind === "targets" && id !== "new" ? (
+        <TargetDetail id={id}>{form}</TargetDetail>
+      ) : (
+        form
       )}
-      <form
-        ref={form}
-        noValidate
-        onSubmit={save}
-        onChange={() => setDirty(true)}
-      >
-        <Stack gap="normal">
-          {error && <Failure message="saveFailed" focus />}
-          <FormControl required>
-            <FormControl.Label>{t("name")}</FormControl.Label>
-            <TextInput
-              size="medium"
-              block
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              validationStatus={invalid.includes("name") ? "error" : undefined}
-            />
-            {invalid.includes("name") && (
-              <FormControl.Validation variant="error">
-                {t("required")}
-              </FormControl.Validation>
-            )}
-          </FormControl>
-          <FormControl>
-            <Checkbox
-              checked={enabled}
-              onChange={(e) => setEnabled(e.target.checked)}
-            />
-            <FormControl.Label>{t("enabled")}</FormControl.Label>
-          </FormControl>
-          <Fields
-            kind={kind}
-            values={values}
-            references={references}
-            invalid={invalid}
-            change={(key, value) => {
-              setValues((v) => ({ ...v, [key]: value }));
-              setDirty(true);
-            }}
-          />
-          <Stack direction="horizontal" gap="condensed">
-            <Button
-              size="medium"
-              type="submit"
-              variant="primary"
-              loading={busy}
-              loadingAnnouncement={t("loading")}
-            >
-              {t("save")}
-            </Button>
-            <Button
-              size="medium"
-              onClick={() =>
-                dirty ? setCancel(true) : router.push(`/${kind}`)
-              }
-            >
-              {t("cancel")}
-            </Button>
-          </Stack>
-        </Stack>
-      </form>
       {(kind === "schedules" || kind === "rules") && (
         <ResourceTestActions
           kind={kind}
@@ -142,7 +77,7 @@ export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
       {cancel && (
         <Confirm
           title={t("unsaved")}
-          confirmButtonContent={t("cancel")}
+          confirmButtonContent={t("discardChanges")}
           cancelButtonContent={t("back")}
           onClose={(g) => {
             setCancel(false);

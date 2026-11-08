@@ -6,6 +6,7 @@ import { useLoad } from "@/lib/use-load";
 import type { Kind, Resource } from "@/lib/types";
 import { schema } from "./schema";
 import { formValues, settingsValues } from "./form-values";
+import { useRuleTemplates } from "./use-rule-templates";
 import { parseDuration } from "@/lib/duration";
 export function useResourceEditor(kind: Kind, id: string) {
   const router = useRouter();
@@ -19,6 +20,7 @@ export function useResourceEditor(kind: Kind, id: string) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const [invalid, setInvalid] = useState<string[]>([]);
+  const templates = useRuleTemplates(kind, id, values, setValues, setName);
   useEffect(() => {
     if (existing.data) {
       setName(existing.data.name);
@@ -119,6 +121,7 @@ export function useResourceEditor(kind: Kind, id: string) {
     }
   }
   return {
+    ...templates,
     router,
     form,
     existing,

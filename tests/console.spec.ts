@@ -1,3 +1,5 @@
+import { choose, changeLanguage } from "./choice-checks";
+import { verifyExperience } from "./experience-checks";
 import { test, expect } from "@playwright/test";
 import {
   beginRegistrationRace,
@@ -19,7 +21,10 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   request,
 }) => {
   const pageErrors: string[] = [];
-  page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("pageerror", (error) => {
+    pageErrors.push(error.message);
+    console.error("Browser error:", error.message);
+  });
   const base = process.env.TEST_API_URL ?? "http://127.0.0.1:5080";
   const accountResponse = await request.post(`${base}/api/accounts`, {
     data: {
@@ -40,22 +45,19 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   await beginRegistrationRace(request);
   const cdp = await registerOwner(page, context);
   await verifySingleton(request);
-  await page.getByLabel("语言", { exact: true }).selectOption("en");
-  await page.getByRole("button", { name: "应用语言", exact: true }).click();
+  await changeLanguage(page, "English");
   await expect(
     page.getByRole("heading", { name: "Targets", exact: true }).first(),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("combobox", { name: "Language", exact: true }),
-  ).toHaveValue("en");
+    page.getByRole("button", { name: "Language: English", exact: true }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "New", exact: true }).click();
   await page
     .getByRole("textbox", { name: /^Name\s*\*?$/ })
     .fill("QA monitored user");
-  await page
-    .getByRole("combobox", { name: /^Telegram account\s*\*?$/ })
-    .selectOption(account.id);
+  await choose(page, page, "Telegram account", "QA disabled account", true);
   await page
     .getByRole("textbox", { name: /^Username or phone\s*\*?$/ })
     .fill("@alice");
@@ -68,13 +70,11 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   await page
     .getByRole("link", { name: "QA monitored user", exact: true })
     .click();
+  await page.getByRole("tab", { name: "Configuration", exact: true }).click();
   await page
     .getByRole("textbox", { name: /^Name\s*\*?$/ })
     .fill("QA renamed user");
-  await page.getByLabel("Language", { exact: true }).selectOption("zh-CN");
-  await page
-    .getByRole("button", { name: "Apply language", exact: true })
-    .click();
+  await changeLanguage(page, "简体中文");
   await expect(page.getByRole("textbox", { name: /^名称\s*\*?$/ })).toHaveValue(
     "QA renamed user",
   );
@@ -99,6 +99,7 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   expect(download.suggestedFilename()).toContain("presence-");
   await verifyConfigurationPages(page);
   const monitoringTarget = await verifyMonitoringDetails(page, test.info());
+  await verifyExperience(page, monitoringTarget, test.info(), cdp);
   await verifyManualTests(page, account.id, monitoringTarget, test.info());
   await verifyAccountLogin(page, account.id, test.info());
   await page.setViewportSize({ width: 375, height: 812 });

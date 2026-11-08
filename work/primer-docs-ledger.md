@@ -59,3 +59,7 @@
 ## Monitoring details and manual tests (2026-11-08)
 
 Primer React 38.45.0 retained. Target detail follows the existing settings page with a detail metadata section; forms and local save actions retain their placement. Avatar, Button, Banner, Stack, FormControl and TextInput public APIs checked through official Primer MCP and installed types. Definition-list grid is the only custom layout; uses base-size and semantic color tokens, with a 544px implementation breakpoint. No GitHub pixel equivalence is claimed. Counter values come from the background repository; browser reads do not increment them. Manual test controls explain saved-configuration sends and show per-delivery outcomes. Visual/interaction acceptance uses desktop and 375px views, without a same-version GitHub screenshot baseline.
+
+## 2026-11-08 full catalog review
+
+See [full component evidence and implementation plan](primer-full-review-2026-11-08.md). This review supersedes selected-component-only evidence for the current task.

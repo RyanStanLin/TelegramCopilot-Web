@@ -15,8 +15,8 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
         targetId: target.id,
         enabled: true,
         pollCount: count,
-        successfulPollCount: count,
-        failedPollCount: 0,
+        successfulPollCount: count - 2,
+        failedPollCount: 2,
         lastPollStartedAt: at,
         lastPollCompletedAt: at,
         lastSuccessfulPollAt: at,
@@ -26,6 +26,11 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
         error: null,
         isPolling: false,
         now: at,
+        activity: {
+          timeZone: "Asia/Taipei",
+          today: { onlineSeconds: 3600, count: 1 },
+          week: { onlineSeconds: 9000, count: 3 },
+        },
         profile: {
           userId: 42,
           displayName: "Alice Lee",
@@ -56,6 +61,10 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
   await expect(region.getByText("Alice Lee", { exact: true })).toBeVisible();
   await expect(region.getByText("@alice", { exact: true })).toBeVisible();
   await expect(region.getByText("17", { exact: true }).first()).toBeVisible();
+  await expect(region.getByText("1小时", { exact: true })).toBeVisible();
+  await expect(region.getByText("2小时30分", { exact: true })).toBeVisible();
+  await expect(region.getByText("88.2%", { exact: true })).toBeVisible();
+  await expect(region.getByText("3", { exact: true })).toBeVisible();
   const avatar = region.locator("img");
   await expect(avatar).toBeVisible();
   await expect
@@ -87,6 +96,7 @@ export async function verifyMonitoringDetails(page: Page, info: TestInfo) {
       exact: true,
     }),
   ).toBeVisible();
+  await page.getByRole("tab", { name: "配置", exact: true }).click();
   const interval = page.getByRole("textbox", { name: /^检测间隔\s*\*?$/ });
   await interval.fill("2小时32分1秒");
   await expect(page.getByText(/请输入范围内的完整时长/)).toBeVisible();
