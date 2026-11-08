@@ -27,6 +27,8 @@ Runtime variables are `TELEGRAMCOPILOT_API_URL`, `WEBAUTHN_ORIGIN`, `WEBAUTHN_RP
 
 The standalone Next.js Node Proxy handles `/api/live` at runtime, validates the existing Passkey session and exact browser Origin, strips Cookie/Authorization, and rewrites the WebSocket upgrade to `TELEGRAMCOPILOT_API_URL`. It shares the ordinary API origin and needs no separate socket server or new secret. One browser connection multiplexes monitoring and account status; reconnect/resubscribe replaces HTTP polling. The backend expires console sockets with their existing eight-hour session. Do not cache or strip upgrade headers on this path.
 
+After validating the browser's console Origin, the Proxy sets the separate upstream request's Origin to the configured API origin. The PaaS WebSocket gateway checks Origin against that hop's public Host; forwarding the console domain unchanged to the API domain causes 403 even when the application session is valid. Keep the browser/session checks intact and do not disable the platform check. CI places a strict same-origin gateway between Next and Kestrel so an application-only 101 cannot hide this deployment failure.
+
 The sole persistent volume is `web-data` at `/data`, owned by UID 10001. It holds web.db, the unique public credential, counters, challenges and the session-signing key. Keep it with the same RP ID and HTTPS origin across updates. Never rename the volume to attempt an upgrade. The container root is read-only; `/tmp` is disposable.
 
 First registration belongs to the first visitor who completes WebAuthn. The owner must register using their own authenticator. Browser integration tests must never run against this production instance.

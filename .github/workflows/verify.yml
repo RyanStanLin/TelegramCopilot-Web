@@ -36,17 +36,21 @@ jobs:
         working-directory: application
         env:
           NODE_OPTIONS: --experimental-sqlite
-          TELEGRAMCOPILOT_API_URL: http://127.0.0.1:5080
+          TELEGRAMCOPILOT_API_URL: http://127.0.0.1:5081
+          TEST_GATEWAY_URL: http://127.0.0.1:5081
           WEBAUTHN_ORIGIN: http://localhost:3000
           WEBAUTHN_RP_ID: localhost
         run: |
           install -d -m 700 "$RUNNER_TEMP/api-data" "$RUNNER_TEMP/web-data"
           DataPath="$RUNNER_TEMP/api-data" ASPNETCORE_URLS=http://127.0.0.1:5080 dotnet ../api-fixture/src/TelegramCopilot.Api/bin/Release/net10.0/TelegramCopilot.Api.dll > "$RUNNER_TEMP/api.log" 2>&1 &
           api_pid=$!
+          GATEWAY_TARGET=http://127.0.0.1:5080 GATEWAY_PORT=5081 node tests/fixtures/strict-gateway.mjs > "$RUNNER_TEMP/gateway.log" 2>&1 &
+          gateway_pid=$!
           WEB_DATA_PATH="$RUNNER_TEMP/web-data" npm start > "$RUNNER_TEMP/web.log" 2>&1 &
           web_pid=$!
-          trap 'kill "$api_pid" "$web_pid" 2>/dev/null || true' EXIT
+          trap 'kill "$api_pid" "$gateway_pid" "$web_pid" 2>/dev/null || true' EXIT
           curl --retry 30 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:5080/health/live
+          curl --retry 30 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:5081/__gateway
           curl --retry 30 --retry-connrefused --retry-delay 1 --fail http://localhost:3000/api/auth/status
           npm run test:e2e
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

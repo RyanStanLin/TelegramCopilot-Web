@@ -66,6 +66,27 @@ export async function verifyRealtime(
   await expect
     .poll(() => observed.frames.some((f) => f.path === "/monitoring" && f.data))
     .toBe(true);
+  if (process.env.TEST_GATEWAY_URL) {
+    const gateway = process.env.TEST_GATEWAY_URL;
+    const denied = await page.request.get(`${gateway}/api/live`, {
+      headers: {
+        Origin: new URL(process.env.TEST_WEB_URL ?? "http://localhost:3000")
+          .origin,
+        Upgrade: "websocket",
+        Connection: "Upgrade",
+        "Sec-WebSocket-Version": "13",
+        "Sec-WebSocket-Key": "dGhlIHNhbXBsZSBub25jZQ==",
+      },
+    });
+    expect(denied.status()).toBe(403);
+    const metrics = await (
+      await page.request.get(`${gateway}/__gateway`)
+    ).json();
+    expect(metrics.upgrades).toBeGreaterThan(0);
+    expect(metrics.rejectedOrigins).toBeGreaterThan(0);
+    expect(metrics.cookieHeaders).toBe(0);
+    expect(metrics.authorizationHeaders).toBe(0);
+  }
   const initial = observed.frames
     .filter((f) => f.path === "/monitoring")
     .at(-1)!.data!.pollCount;

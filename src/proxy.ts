@@ -16,7 +16,9 @@ export function proxy(request: NextRequest) {
   headers.delete("authorization");
   headers.set("X-Copilot-Session-Expires", String(session?.expires ?? 0));
   const api = process.env.TELEGRAMCOPILOT_API_URL ?? "http://127.0.0.1:5080";
-  return NextResponse.rewrite(new URL("/api/live", api), {
+  const target = new URL("/api/live", api);
+  headers.set("origin", target.origin);
+  return NextResponse.rewrite(target, {
     request: { headers },
   });
 }
