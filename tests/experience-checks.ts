@@ -5,13 +5,14 @@ import {
   type CDPSession,
 } from "@playwright/test";
 import { choose, changeLanguage } from "./choice-checks";
+import { verifyDelayedRuleTemplates } from "./rule-template-checks";
 export async function verifyExperience(
   page: Page,
   targetId: string,
   info: TestInfo,
   touch: CDPSession,
 ) {
-  await page.goto("/rules/new");
+  await verifyDelayedRuleTemplates(page);
   const form = page.getByRole("main").locator("form").first();
   const title = form.getByRole("textbox", { name: /^标题模板/ });
   await expect(title).toHaveValue("{NAME} 在线");
@@ -23,6 +24,7 @@ export async function verifyExperience(
   await expect(form.getByLabel(/^正文模板/)).toHaveValue(
     "本次在线时长：{TIME_OF_ONLINE}",
   );
+  await expect(form.getByLabel(/^名称/)).toHaveValue("My notification draft");
   await title.fill("Keep my draft");
   await changeLanguage(page, "English");
   await expect(form.getByLabel(/^Title template/)).toHaveValue("Keep my draft");
@@ -33,6 +35,7 @@ export async function verifyExperience(
     "{NAME} went offline",
   );
   await choose(form, page, "Event", "Online");
+  await expect(form.getByLabel(/^Name/)).toHaveValue("My notification draft");
   await expect(form.getByLabel(/^Title template/)).toHaveValue(
     "{NAME} is online",
   );

@@ -17,7 +17,7 @@ export function ResourceForm({ kind, id }: { kind: Kind; id: string }) {
   const [cancel, setCancel] = useState(false);
   const editor = useResourceEditor(kind, id);
   const { router, existing, name, enabled, values, dirty, setDirty } = editor;
-  if (existing.loading) return <Loading />;
+  if (existing.loading || editor.templateInitializing) return <Loading />;
   if (existing.error) return <Failure />;
   const form = (
     <ResourceEditorForm

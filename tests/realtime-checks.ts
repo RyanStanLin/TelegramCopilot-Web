@@ -21,6 +21,16 @@ export async function verifyUnauthenticatedRealtime(page: Page) {
       }),
   );
   expect(["rejected", "closed"]).toContain(result);
+  const denied = await page.request.get("/api/live", {
+    headers: {
+      Origin: new URL(process.env.TEST_WEB_URL ?? "http://localhost:3000").origin,
+      Upgrade: "websocket",
+      Connection: "Upgrade",
+      "Sec-WebSocket-Version": "13",
+      "Sec-WebSocket-Key": "dGhlIHNhbXBsZSBub25jZQ==",
+    },
+  });
+  expect(denied.status()).toBe(401);
   const wrongOrigin = await page.request.get("/api/live", {
     headers: { Origin: "https://wrong.example" },
   });

@@ -10,9 +10,14 @@ const stats = {
 function headers(request) {
   return { ...request.headers, host: target.host };
 }
-function writeHead(socket, response) {
+function writeHead(socket, response, close = false) {
   let value = `HTTP/1.1 ${response.statusCode} ${response.statusMessage}\r\n`;
-  for (const [name, values] of Object.entries(response.headers))
+  const outgoing = { ...response.headers };
+  if (close) {
+    delete outgoing["transfer-encoding"];
+    outgoing.connection = "close";
+  }
+  for (const [name, values] of Object.entries(outgoing))
     for (const entry of Array.isArray(values) ? values : [values])
       if (entry !== undefined) value += `${name}: ${entry}\r\n`;
   socket.write(value + "\r\n");
@@ -69,7 +74,7 @@ server.on("upgrade", (request, socket, head) => {
     socket.pipe(connection).pipe(socket);
   });
   upstream.on("response", (response) => {
-    writeHead(socket, response);
+    writeHead(socket, response, true);
     response.pipe(socket);
   });
   upstream.on("error", () => socket.destroy());
