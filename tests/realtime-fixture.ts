@@ -40,9 +40,16 @@ async function createFixture(page: Page) {
   });
   return {
     set(path: string, value: () => unknown) {
+      const previous = values.get(path);
       values.set(path, value);
+      return () => { if (previous) values.set(path, previous); else values.delete(path); };
     },
     push,
+    subscribed: (path: string) => [...connections].some((connection) => connection.paths.has(path)),
+    fail(path: string) {
+      for (const connection of connections)
+        if (connection.paths.has(path)) connection.browser.send(JSON.stringify({ path, error: "Unavailable" }));
+    },
     remove(path: string) {
       values.delete(path);
     },

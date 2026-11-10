@@ -2,7 +2,7 @@ import { expect, type Page, type TestInfo } from "@playwright/test";
 
 export async function verifyPresenceLayout(page: Page) {
   await page.evaluate(() => document.fonts.ready);
-  const headers = page.getByRole("table").first().getByRole("columnheader");
+  const headers = page.getByRole("table", { name: "统计数据", exact: true }).getByRole("columnheader");
   const first = await headers.nth(0).boundingBox();
   const second = await headers.nth(1).boundingBox();
   expect(first).not.toBeNull();

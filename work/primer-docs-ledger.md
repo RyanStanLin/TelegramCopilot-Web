@@ -63,3 +63,7 @@ Primer React 38.45.0 retained. Target detail follows the existing settings page 
 ## 2026-11-08 full catalog review
 
 See [full component evidence and implementation plan](primer-full-review-2026-11-08.md). This review supersedes selected-component-only evidence for the current task.
+
+## 2026-11-10 daily activity
+
+See [current daily activity evidence and plan](primer-daily-activity-2026-11-10.md). Live patterns/foundations/catalog were rechecked against the unchanged full review; new Timeline usage and chart semantics were studied before implementation. The user clarified red means abnormal observation/interruption rather than normal person-offline.

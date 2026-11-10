@@ -1,0 +1,103 @@
+.band {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--control-medium-size);
+  border: var(--borderWidth-thin) solid var(--borderColor-emphasis);
+  border-radius: var(--borderRadius-small);
+  cursor: crosshair;
+}
+
+.segment {
+  stroke: var(--bgColor-default);
+  stroke-width: var(--borderWidth-thin);
+}
+
+.segment[data-kind="online"],
+.key[data-kind="online"],
+.bar {
+  fill: var(--bgColor-success-emphasis);
+  background-color: var(--bgColor-success-emphasis);
+}
+
+.segment[data-kind="offline"],
+.key[data-kind="offline"] {
+  fill: var(--bgColor-neutral-emphasis);
+  background-color: var(--bgColor-neutral-emphasis);
+}
+
+.segment[data-kind="interrupted"],
+.key[data-kind="interrupted"] {
+  fill: var(--bgColor-danger-emphasis);
+  background-color: var(--bgColor-danger-emphasis);
+}
+
+.segment[data-kind="unobserved"],
+.key[data-kind="unobserved"] {
+  fill: var(--bgColor-default);
+  background-color: var(--bgColor-default);
+  stroke: var(--borderColor-emphasis);
+  stroke-dasharray: var(--base-size-4);
+  border-style: dashed;
+}
+
+.segment[data-kind="future"],
+.key[data-kind="future"] {
+  fill: var(--bgColor-muted);
+  background-color: var(--bgColor-muted);
+}
+
+.key {
+  display: inline-block;
+  inline-size: var(--base-size-12);
+  block-size: var(--base-size-12);
+  border: var(--borderWidth-thin) solid var(--borderColor-emphasis);
+}
+
+.cursor {
+  stroke: var(--fgColor-default);
+  stroke-width: var(--borderWidth-thick);
+}
+
+.axis {
+  color: var(--fgColor-muted);
+  font: var(--text-body-shorthand-small);
+}
+
+.plot {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--base-size-128);
+}
+
+.grid {
+  stroke: var(--borderColor-default);
+  stroke-width: var(--borderWidth-thin);
+}
+
+.selectedBar {
+  stroke: var(--fgColor-default);
+  stroke-width: var(--borderWidth-thick);
+}
+
+.band:focus-visible,
+.plot:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.weekButton {
+  block-size: auto;
+  inline-size: 100%;
+  padding-inline: 0;
+}
+
+.weekColumn {
+  min-inline-size: 0;
+  flex-basis: 0;
+}
+
+.weekPlot {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--base-size-96);
+}

@@ -54,7 +54,7 @@ export async function verifyTablePolish(
       },
     }),
   );
-  await page.goto(`/presence?target=${id}`);
+  await page.goto(`/presence?target=${id}&from=2026-11-07T00:00:00Z&to=2026-11-07T02:00:00Z`);
   const reason = page.getByText("已读取 Telegram 状态", { exact: true });
   await expect(reason).toBeVisible();
   const geometry = await reason.evaluate((node) => {

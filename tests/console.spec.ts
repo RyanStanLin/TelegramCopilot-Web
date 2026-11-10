@@ -91,6 +91,7 @@ test("single_passkey_guards_console_and_configuration_workflows", async ({
   );
   await page.getByRole("button", { name: "保存更改", exact: true }).click();
   await page.getByRole("link", { name: "查看在线记录", exact: true }).click();
+  await page.getByText("历史查询与导出", { exact: true }).first().click();
   await expect(
     page.getByRole("heading", { name: "统计数据", exact: true }),
   ).toBeVisible();
